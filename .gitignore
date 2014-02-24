@@ -6,11 +6,11 @@
 *.ear
 
 # binaries
-ClassiCubeLauncher/build/*
-ClassiCubeLauncher/dist/*
-ClassiCubeSelfUpdater/build/*
-ClassiCubeSelfUpdater/dist/*
+/CCChargedMinersLauncher/build/*
+/CCChargedMinersLauncher/dist/*
+/CCChargedMinersSelfUpdater/build/*
+/CCChargedMinersSelfUpdater/dist/*
 
 # local settings
-ClassiCubeLauncher/nbproject/private/*
-ClassiCubeSelfUpdater/nbproject/private/*
+/CCChargedMinersLauncher/nbproject/private/*
+/CCChargedMinersSelfUpdater/nbproject/private/*
