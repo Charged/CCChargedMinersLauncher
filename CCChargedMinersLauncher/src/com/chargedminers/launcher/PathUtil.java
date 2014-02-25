@@ -1,5 +1,6 @@
 package com.chargedminers.launcher;
 
+import com.chargedminers.shared.SharedUpdaterCode;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,14 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import com.chargedminers.shared.SharedUpdaterCode;
 
 final class PathUtil {
 
     public static final String LOG_FILE_NAME = "launcher.log",
             LOG_OLD_FILE_NAME = "launcher.old.log",
             CLIENT_LOG_FILE_NAME = "log.txt",
-            CLIENT_LOG_OLD_FILE_NAME = "log.old.txt",
             OPTIONS_FILE_NAME = "settings.ini",
             SELF_UPDATER_LOG_FILE_NAME = "selfupdater.log";
 
@@ -88,7 +87,7 @@ final class PathUtil {
                 osSuffix = "Linux";
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new RuntimeException("Unsupported operating system.");
         }
 
         return "Charge." + architecture + "." + osSuffix;

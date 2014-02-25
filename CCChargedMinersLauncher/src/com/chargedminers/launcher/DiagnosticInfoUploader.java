@@ -1,5 +1,7 @@
 package com.chargedminers.launcher;
 
+import com.chargedminers.launcher.gui.ErrorScreen;
+import com.chargedminers.shared.SharedUpdaterCode;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonParserException;
 import com.grack.nanojson.JsonStringWriter;
@@ -18,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
-import com.chargedminers.launcher.gui.ErrorScreen;
-import com.chargedminers.shared.SharedUpdaterCode;
 import org.apache.commons.lang3.StringUtils;
 
 public class DiagnosticInfoUploader {
@@ -34,12 +34,10 @@ public class DiagnosticInfoUploader {
         String launcherLogData = null,
                 launcherOldLogData = null,
                 clientLogData = null,
-                clientOldLogData = null,
                 selfUpdaterLogData = null,
                 optionsData = null;
         try {
             clientLogData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.CLIENT_LOG_FILE_NAME);
-            clientOldLogData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.CLIENT_LOG_OLD_FILE_NAME);
             selfUpdaterLogData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.SELF_UPDATER_LOG_FILE_NAME);
             optionsData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.OPTIONS_FILE_NAME);
             launcherLogData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.LOG_FILE_NAME);
@@ -74,11 +72,6 @@ public class DiagnosticInfoUploader {
         if (clientLogData != null) {
             writer = writer.object(PathUtil.CLIENT_LOG_FILE_NAME)
                     .value("content", clientLogData)
-                    .end();
-        }
-        if (clientOldLogData != null) {
-            writer = writer.object(PathUtil.CLIENT_LOG_OLD_FILE_NAME)
-                    .value("content", clientOldLogData)
                     .end();
         }
         if (launcherLogData != null) {
