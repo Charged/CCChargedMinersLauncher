@@ -20,10 +20,11 @@ import com.chargedminers.shared.SharedUpdaterCode;
 public class Program {
 
     private static final Logger logger = Logger.getLogger(Program.class.getName());
-    private static final String LAUNCHER_ENTRY_CLASS = "net.classicube.launcher.EntryPoint";
-    private static final String LAUNCHER_JAR_NAME = "launcher.jar";
-    private static final String LAUNCHER_ENTRY_METHOD = "main";
-    private static final String BUG_REPORT_URL = "http://is.gd/CCL_bugs";
+    private static final String LAUNCHER_ENTRY_CLASS = "net.classicube.launcher.EntryPoint",
+            LAUNCHER_JAR_NAME = "launcher.jar",
+            LAUNCHER_DOWNLOAD_URL = "http://cm-cdn.fcraft.net/launcher/launcher.jar",
+            LAUNCHER_ENTRY_METHOD = "main",
+            BUG_REPORT_URL = "http://is.gd/CMBugs";
     private static File launcherDir, launcherJar;
 
     public static void main(String[] args) {
@@ -86,7 +87,7 @@ public class Program {
     }
 
     private static void downloadLauncher() throws IOException {
-        final File launcherTempFile = downloadFile("launcher.jar.pack.lzma");
+        final File launcherTempFile = downloadFile();
         try {
             replaceFile(launcherTempFile, launcherJar);
         } catch (IOException ex) {
@@ -110,18 +111,18 @@ public class Program {
         return loader.loadClass(LAUNCHER_ENTRY_CLASS);
     }
 
-    private static File downloadFile(final String remoteName) throws IOException {
+    private static File downloadFile() throws IOException {
         try {
-            final File tempFile = File.createTempFile(remoteName, ".downloaded");
-            final URL website = new URL(SharedUpdaterCode.BASE_URL + remoteName);
+            final File tempFile = File.createTempFile(LAUNCHER_JAR_NAME, ".downloaded");
+            final URL website = new URL(LAUNCHER_DOWNLOAD_URL);
             final ReadableByteChannel rbc = Channels.newChannel(website.openStream());
             try (final FileOutputStream fos = new FileOutputStream(tempFile)) {
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             }
             return tempFile;
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Error downloading launcher component " + remoteName, ex);
-            throw new IOException("Error downloading launcher component " + remoteName, ex);
+            logger.log(Level.SEVERE, "Error downloading launcher component " + LAUNCHER_JAR_NAME, ex);
+            throw new IOException("Error downloading launcher component " + LAUNCHER_JAR_NAME, ex);
         }
     }
 

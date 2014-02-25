@@ -1,6 +1,5 @@
 package com.chargedminers.launcher;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,11 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.CRC32;
 import javax.swing.SwingWorker;
 import com.chargedminers.launcher.gui.UpdateScreen;
 import com.chargedminers.shared.SharedUpdaterCode;
-import com.chargedminers.shared.SharedUpdaterCode.OperatingSystem;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // Handles downloading and deployment of client updates,
 // as well as resource files used by the client.
@@ -154,8 +153,8 @@ public final class UpdateTask
     private List<FileToDownload> pickBinariesToDownload()
             throws IOException {
         final List<FileToDownload> filesToDownload = new ArrayList<>();
-        final List<FileToDownload> localFiles = listBinaries();
         final HashMap<String, RemoteFile> remoteFiles = getRemoteIndex();
+        final List<FileToDownload> localFiles = listBinaries(remoteFiles);
         final boolean updateExistingFiles = (Prefs.getUpdateMode() != UpdateMode.DISABLED);
 
         // Getting remote file index failed. Abort update.
@@ -238,9 +237,9 @@ public final class UpdateTask
         return filesToDownload;
     }
 
-    private FileToDownload launcherJarFile, primaryBinaryFile, secondaryBinaryFile;
+    private FileToDownload launcherJarFile;
 
-    private List<FileToDownload> listBinaries()
+    private List<FileToDownload> listBinaries(HashMap<String, RemoteFile> remoteIndex)
             throws IOException {
         List<FileToDownload> localFiles = new ArrayList<>();
         final File dataDir = SharedUpdaterCode.getDataDir();
@@ -251,22 +250,31 @@ public final class UpdateTask
                 new File(dataDir, SharedUpdaterCode.LAUNCHER_NEW_JAR_NAME));
         localFiles.add(launcherJarFile);
 
-        String primaryBinaryName = PathUtil.getBinaryName(true);
-        primaryBinaryFile = new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/",
-                primaryBinaryName, new File(dataDir, primaryBinaryName));
-        localFiles.add(primaryBinaryFile);
-
-        String altBinaryName = PathUtil.getBinaryName(false);
-        if (altBinaryName != null) {
-            secondaryBinaryFile = new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/",
-                    altBinaryName, new File(dataDir, altBinaryName));
-            localFiles.add(secondaryBinaryFile);
+        String primaryPlatform = PathUtil.getBinaryName(true);
+        if (remoteIndex.containsKey(primaryPlatform)) {
+            localFiles.add(
+                    new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/",
+                            primaryPlatform, new File(dataDir, primaryPlatform)));
+        } else {
+            String altPlatform = PathUtil.getBinaryName(false);
+            if (altPlatform != null) {
+                localFiles.add(
+                        new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/",
+                                altPlatform, new File(dataDir, altPlatform)));
+            } else {
+                throw new RuntimeException("Could not find binaries that would work on your platform!");
+            }
         }
         return localFiles;
     }
 
-    // get a list of binaries available from CC.net
-    // TODO: port VersionsTxt from old ChargedMinersLauncher
+    private static final String VERSION_COMMENT_PATTERN = "^\\s*#",
+            VERSION_PLATFORM_PATTERN = "^(\\S+)\\s*$",
+            VERSION_HASH_AND_NAME_PATTERN = "\\s*([a-fA-F0-9]{32})\\s+(\\S+)\\s*$";
+    private static final Pattern versionPlatformRegex = Pattern.compile(VERSION_PLATFORM_PATTERN),
+            versionDetailsRegex = Pattern.compile(VERSION_HASH_AND_NAME_PATTERN);
+
+    // get a list of binaries available from Charged-Miners CDN
     private HashMap<String, RemoteFile> getRemoteIndex() {
         final String hashIndex = HttpUtil.downloadString(FILE_INDEX_URL);
         final HashMap<String, RemoteFile> remoteFiles = new HashMap<>();
@@ -276,13 +284,33 @@ public final class UpdateTask
             return null;
         }
 
-        // the rest of the files
+        String platform = "";
+        boolean platformFound = false;
         for (final String line : hashIndex.split("\\r?\\n")) {
-            final String[] components = line.split(" ");
-            final RemoteFile file = new RemoteFile();
-            file.name = components[0];
-            file.hash = components[2].toLowerCase();
-            remoteFiles.put(file.name.toLowerCase(), file);
+            if (line.length() == 0 || line.matches(VERSION_COMMENT_PATTERN)) {
+                // Skip empty lines and comments
+                continue;
+            }
+
+            final Matcher platformMatch = versionPlatformRegex.matcher(line);
+            if (platformMatch.matches()) {
+                // We found a platform label (e.g. "Charge.i386.exe")
+                platformFound = true;
+                platform = platformMatch.group(1);
+                continue;
+            }
+
+            final Matcher dataMatch = versionDetailsRegex.matcher(line);
+            if (dataMatch.matches() && platformFound) {
+                // We found a details line that follows a platform label
+                // (e.g. "  3cc74e29723e7d790f8d496df199cdcb  Charge.i386.f13a709.exe")
+                platformFound = false;
+                final RemoteFile file = new RemoteFile();
+                file.platform = platform;
+                file.hash = dataMatch.group(1);
+                file.name = dataMatch.group(2);
+                remoteFiles.put(platform.toLowerCase(), file);
+            }
         }
         return remoteFiles;
     }
@@ -345,6 +373,9 @@ public final class UpdateTask
                 throw new IOException("Unable to make directory " + parentDir);
             }
             PathUtil.replaceFile(processedFile, targetFile);
+            if (!targetFile.canExecute()) {
+                targetFile.setExecutable(true);
+            }
         } catch (final IOException ex) {
             LogUtil.getLogger().log(Level.SEVERE, "Error deploying " + targetFile.getName(), ex);
         }
@@ -459,6 +490,7 @@ public final class UpdateTask
 
     private final static class RemoteFile {
 
+        String platform;
         String name;
         String hash;
     }
