@@ -23,12 +23,13 @@ final public class ClientLauncher {
 
         try {
             // Find the game binary
-            File binaryFile = new File(SharedUpdaterCode.getDataDir(), PathUtil.getBinaryName(false));
-            if (!binaryFile.exists()) {
-                binaryFile = new File(SharedUpdaterCode.getDataDir(), PathUtil.getBinaryName(true));
+            File binaryFile = new File(SharedUpdaterCode.getDataDir(), PathUtil.getBinaryName(true));
+            if (!binaryFile.exists() && PathUtil.getBinaryName(false) != null) {
+                // See if alternative binary is available
+                binaryFile = new File(SharedUpdaterCode.getDataDir(), PathUtil.getBinaryName(false));
             }
             if (!binaryFile.exists()) {
-                throw new FileNotFoundException("Could not find the game executable at " + binaryFile.getAbsolutePath());
+                throw new FileNotFoundException("Could not find the game binary at " + binaryFile.getAbsolutePath());
             }
 
             // Chmod +x, if needed
