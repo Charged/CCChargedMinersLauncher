@@ -19,6 +19,7 @@ final public class ClientLauncher {
         if (joinInfo == null) {
             throw new NullPointerException("joinInfo");
         }
+        SessionManager.getSession().storeResumeInfo(joinInfo);
 
         try {
             // Find the game binary
@@ -36,7 +37,7 @@ final public class ClientLauncher {
             }
 
             // Pack joinInfo's information into an mc:// URI
-            String mcUrl = String.format("mc://%s:%d/%s/%s",
+            final String mcUrl = String.format("mc://%s:%d/%s/%s",
                     joinInfo.address.getHostAddress(), joinInfo.port, joinInfo.playerName,
                     (joinInfo.pass != null ? joinInfo.pass : ""));
 
