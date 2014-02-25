@@ -6,12 +6,9 @@ public final class Prefs {
 
     // Key names
     private static final String keyUpdateMode = "UpdateMode",
-            keyFullscreen = "WindowSize",
             keyRememberUsers = "RememberUsers",
             keyRememberPasswords = "RememberPasswords",
             keyRememberServer = "RememberServer",
-            keyJavaArgs = "JavaArgs",
-            keyMaxMemory = "MaxMemory",
             keySelectedGameService = "SelectedGameService",
             keyDebugMode = "DebugMode",
             keyRememberedExternalIPs = "RememberedExternalIPs",
@@ -19,19 +16,11 @@ public final class Prefs {
 
     // Defaults
     public final static UpdateMode UpdateModeDefault = UpdateMode.NOTIFY;
-    public final static boolean FullscreenDefault = false,
-            RememberUsersDefault = true,
+    public final static boolean RememberUsersDefault = true,
             RememberPasswordsDefault = true,
             RememberServerDefault = true,
             DebugModeDefault = false,
             KeepOpenDefault = false;
-    public final static String JavaArgsDefault = "-Dorg.lwjgl.util.Debug=true "
-            + "-Dsun.java2d.noddraw=true "
-            + "-Dsun.awt.noerasebackground=true "
-            + "-Dsun.java2d.d3d=false "
-            + "-Dsun.java2d.opengl=false "
-            + "-Dsun.java2d.pmoffscreen=false";
-    public final static int MaxMemoryDefault = 800;
     public final static GameServiceType SelectedGameServiceDefault = GameServiceType.ClassiCubeNetService;
 
     // Getters
@@ -41,10 +30,6 @@ public final class Prefs {
         } catch (final IllegalArgumentException ex) {
             return UpdateModeDefault;
         }
-    }
-
-    public static boolean getFullscreen() {
-        return getPrefs().getBoolean(keyFullscreen, FullscreenDefault);
     }
 
     public static boolean getRememberUsers() {
@@ -57,14 +42,6 @@ public final class Prefs {
 
     public static boolean getRememberServer() {
         return getPrefs().getBoolean(keyRememberServer, RememberServerDefault);
-    }
-
-    public static String getJavaArgs() {
-        return getPrefs().get(keyJavaArgs, JavaArgsDefault);
-    }
-
-    public static int getMaxMemory() {
-        return getPrefs().getInt(keyMaxMemory, MaxMemoryDefault);
     }
 
     public static boolean getDebugMode() {
@@ -89,10 +66,6 @@ public final class Prefs {
         getPrefs().put(keyUpdateMode, val.name());
     }
 
-    public static void setFullscreen(final boolean val) {
-        getPrefs().putBoolean(keyFullscreen, val);
-    }
-
     public static void setRememberUsers(final boolean val) {
         getPrefs().putBoolean(keyRememberUsers, val);
     }
@@ -103,14 +76,6 @@ public final class Prefs {
 
     public static void setRememberServer(final boolean val) {
         getPrefs().putBoolean(keyRememberServer, val);
-    }
-
-    public static void setJavaArgs(final String val) {
-        getPrefs().put(keyJavaArgs, val);
-    }
-
-    public static void setMaxMemory(final int val) {
-        getPrefs().putInt(keyMaxMemory, val);
     }
 
     public static void setDebugMode(final boolean val) {

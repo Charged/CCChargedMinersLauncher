@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-final class PathUtil {
+public final class PathUtil {
 
     public static final String LOG_FILE_NAME = "launcher.log",
             LOG_OLD_FILE_NAME = "launcher.old.log",

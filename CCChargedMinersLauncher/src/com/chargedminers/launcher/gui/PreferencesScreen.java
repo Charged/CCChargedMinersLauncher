@@ -1,6 +1,7 @@
 package com.chargedminers.launcher.gui;
 
 import com.chargedminers.launcher.AccountManager;
+import com.chargedminers.launcher.ChargedMinersSettings;
 import com.chargedminers.launcher.DiagnosticInfoUploader;
 import com.chargedminers.launcher.GameServiceType;
 import com.chargedminers.launcher.LogUtil;
@@ -9,6 +10,7 @@ import com.chargedminers.launcher.SessionManager;
 import com.chargedminers.launcher.UpdateMode;
 import java.awt.Color;
 import java.awt.event.ItemEvent;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
 import javax.swing.JFrame;
@@ -37,15 +39,13 @@ final class PreferencesScreen extends javax.swing.JDialog {
         bSave.setPreferredSize(bCancel.getSize());
 
         // fix for ugly spinner border
-        nMemory.getEditor().setOpaque(false);
+        nWidth.getEditor().setOpaque(false);
+        nHeight.getEditor().setOpaque(false);
 
-        // hook up context menu
-        CutCopyPasteAdapter.addToComponent(this.tJavaArgs, true, true);
-        
         // Pack and center
         pack();
         setLocationRelativeTo(parent);
-        
+
         // Fill in the values
         loadPreferences();
         checkIfForgetButtonsShouldBeEnabled();
@@ -74,19 +74,39 @@ final class PreferencesScreen extends javax.swing.JDialog {
         this.bForgetServers.setEnabled(hasResume);
     }
 
+    void checkIfSettingsShouldBeEnabled() {
+        xAutoSize.setEnabled(xFullscreen.isSelected());
+        nWidth.setEnabled(!(xFullscreen.isSelected() && xAutoSize.isSelected()));
+        nHeight.setEnabled(!(xFullscreen.isSelected() && xAutoSize.isSelected()));
+    }
+
     // =============================================================================================
     //                                                                         LOADING/STORING PREFS
     // =============================================================================================
     private void loadPreferences() {
-        xFullscreen.setSelected(Prefs.getFullscreen());
         loadUpdateMode(Prefs.getUpdateMode());
         xRememberPasswords.setSelected(Prefs.getRememberPasswords());
         xRememberUsers.setSelected(Prefs.getRememberUsers()); // should be loaded AFTER password
         xRememberServer.setSelected(Prefs.getRememberServer());
-        tJavaArgs.setText(Prefs.getJavaArgs());
-        nMemory.setValue(Prefs.getMaxMemory());
         xDebugMode.setSelected(Prefs.getDebugMode());
         xKeepOpen.setSelected(Prefs.getKeepOpen());
+
+        try {
+            ChargedMinersSettings.load();
+        } catch (IOException ex) {
+            ChargedMinersSettings.reset();
+            ErrorScreen.show("Error loading game settings",
+                    "Game settings could not be loaded due to an unexpected error.", ex);
+        }
+        loadCMPreferences();
+    }
+
+    private void loadCMPreferences() {
+        xFullscreen.setSelected(ChargedMinersSettings.fullscreen);
+        xAutoSize.setSelected(ChargedMinersSettings.autoSize);
+        nWidth.setValue(ChargedMinersSettings.width);
+        nHeight.setValue(ChargedMinersSettings.height);
+        checkIfSettingsShouldBeEnabled();
     }
 
     private void loadUpdateMode(final UpdateMode val) {
@@ -106,27 +126,36 @@ final class PreferencesScreen extends javax.swing.JDialog {
     }
 
     private void loadDefaults() {
-        xFullscreen.setSelected(Prefs.FullscreenDefault);
         loadUpdateMode(Prefs.UpdateModeDefault);
         xRememberUsers.setSelected(Prefs.RememberUsersDefault);
         xRememberPasswords.setSelected(Prefs.RememberPasswordsDefault);
         xRememberServer.setSelected(Prefs.RememberServerDefault);
-        tJavaArgs.setText(Prefs.JavaArgsDefault);
-        nMemory.setValue(Prefs.MaxMemoryDefault);
         xDebugMode.setSelected(Prefs.DebugModeDefault);
         xKeepOpen.setSelected(Prefs.KeepOpenDefault);
+
+        ChargedMinersSettings.reset();
+        loadCMPreferences();
     }
 
     private void storePreferences() {
-        Prefs.setFullscreen(xFullscreen.isSelected());
         Prefs.setUpdateMode(storeUpdateMode());
         Prefs.setRememberUsers(xRememberUsers.isSelected());
         Prefs.setRememberPasswords(xRememberPasswords.isSelected());
         Prefs.setRememberServer(xRememberServer.isSelected());
-        Prefs.setJavaArgs(tJavaArgs.getText());
-        Prefs.setMaxMemory((int) nMemory.getValue());
         Prefs.setDebugMode(xDebugMode.isSelected());
         Prefs.setKeepOpen(xKeepOpen.isSelected());
+
+        ChargedMinersSettings.fullscreen = xFullscreen.isSelected();
+        ChargedMinersSettings.autoSize = xAutoSize.isSelected();
+        ChargedMinersSettings.width = (int)nWidth.getValue();
+        ChargedMinersSettings.height = (int)nHeight.getValue();
+        try {
+            ChargedMinersSettings.save();
+        } catch (IOException ex) {
+            ChargedMinersSettings.reset();
+            ErrorScreen.show("Error saving game settings",
+                    "Game settings could not be saved due to an unexpected error.", ex);
+        }
     }
 
     private UpdateMode storeUpdateMode() {
@@ -242,6 +271,11 @@ final class PreferencesScreen extends javax.swing.JDialog {
         java.awt.GridBagConstraints gridBagConstraints;
 
         rgUpdateMode = new javax.swing.ButtonGroup();
+        javax.swing.JLabel lResolution = new javax.swing.JLabel();
+        nWidth = new javax.swing.JSpinner();
+        javax.swing.JLabel lX = new javax.swing.JLabel();
+        nHeight = new javax.swing.JSpinner();
+        xAutoSize = new javax.swing.JCheckBox();
         xFullscreen = new javax.swing.JCheckBox();
         jSeparator1 = new javax.swing.JSeparator();
         javax.swing.JLabel lUpdateMode = new javax.swing.JLabel();
@@ -256,15 +290,10 @@ final class PreferencesScreen extends javax.swing.JDialog {
         xRememberServer = new javax.swing.JCheckBox();
         bForgetServers = new com.chargedminers.launcher.gui.JNiceLookingButton();
         javax.swing.JSeparator jSeparator3 = new javax.swing.JSeparator();
-        javax.swing.JLabel lParameters = new javax.swing.JLabel();
-        tJavaArgs = new javax.swing.JTextField();
-        javax.swing.JLabel lMemory = new javax.swing.JLabel();
-        nMemory = new javax.swing.JSpinner();
         javax.swing.JSeparator jSeparator4 = new javax.swing.JSeparator();
         bDefaults = new com.chargedminers.launcher.gui.JNiceLookingButton();
         bSave = new com.chargedminers.launcher.gui.JNiceLookingButton();
         bCancel = new com.chargedminers.launcher.gui.JNiceLookingButton();
-        javax.swing.Box.Filler filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         xDebugMode = new javax.swing.JCheckBox();
         bSubmitDiagInfo = new com.chargedminers.launcher.gui.JNiceLookingButton();
         xKeepOpen = new javax.swing.JCheckBox();
@@ -272,13 +301,63 @@ final class PreferencesScreen extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        xFullscreen.setText("Start the game in fullscreen");
-        xFullscreen.setToolTipText("<html>Choose whether ClassiCube games should start in fullscreen mode.<br>\nYou can also toggle fullscreen mode in-game by pressing <b>F11</b>.<br>\nDefault is OFF.");
+        lResolution.setText("Game resolution:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 5);
+        getContentPane().add(lResolution, gridBagConstraints);
+
+        nWidth.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(320), Integer.valueOf(320), null, Integer.valueOf(1)));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_TRAILING;
+        getContentPane().add(nWidth, gridBagConstraints);
+
+        lX.setText("×");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+        getContentPane().add(lX, gridBagConstraints);
+
+        nHeight.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(240), Integer.valueOf(240), null, Integer.valueOf(1)));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        getContentPane().add(nHeight, gridBagConstraints);
+
+        xAutoSize.setText("Auto-size");
+        xAutoSize.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                xAutoSizeStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_TRAILING;
+        getContentPane().add(xAutoSize, gridBagConstraints);
+
+        xFullscreen.setText("Start the game in fullscreen");
+        xFullscreen.setToolTipText("<html>Choose whether ClassiCube games should start in fullscreen mode.<br>\nYou can also toggle fullscreen mode in-game by pressing <b>F11</b>.<br>\nDefault is OFF.");
+        xFullscreen.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                xFullscreenStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.insets = new java.awt.Insets(5, 20, 0, 0);
         getContentPane().add(xFullscreen, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -347,7 +426,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         getContentPane().add(xRememberUsers, gridBagConstraints);
 
@@ -358,7 +437,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -374,7 +453,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         getContentPane().add(xRememberPasswords, gridBagConstraints);
 
@@ -385,7 +464,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -396,7 +475,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
         getContentPane().add(xRememberServer, gridBagConstraints);
@@ -408,7 +487,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 10;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -421,44 +500,10 @@ final class PreferencesScreen extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
         getContentPane().add(jSeparator3, gridBagConstraints);
 
-        lParameters.setText("Java args");
-        lParameters.setToolTipText("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(lParameters, gridBagConstraints);
-
-        tJavaArgs.setToolTipText("<html>Command-line arguments to pass to the client's Java runtime.<br>\nDon't mess with these unless you know exactly what you're doing!");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(tJavaArgs, gridBagConstraints);
-
-        lMemory.setText("Max memory");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 4);
-        getContentPane().add(lMemory, gridBagConstraints);
-
-        nMemory.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(64), Integer.valueOf(64), null, Integer.valueOf(16)));
-        nMemory.setToolTipText("<html>The maximum amount of memory, in megabytes, that the game is allowed to use.<br>\nDon't raise this amount unless your game keeps running out of memory on large maps.<br>\nDefault is 800 MB. Going any lower may cause lag and/or crashes.");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 13;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.1;
-        getContentPane().add(nMemory, gridBagConstraints);
-
         jSeparator4.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 0, 8, 0));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 15;
+        gridBagConstraints.gridy = 14;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
@@ -473,8 +518,8 @@ final class PreferencesScreen extends javax.swing.JDialog {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 16;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridy = 15;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LAST_LINE_START;
         getContentPane().add(bDefaults, gridBagConstraints);
 
@@ -485,8 +530,8 @@ final class PreferencesScreen extends javax.swing.JDialog {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 16;
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 15;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LAST_LINE_END;
         getContentPane().add(bSave, gridBagConstraints);
 
@@ -497,23 +542,18 @@ final class PreferencesScreen extends javax.swing.JDialog {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 16;
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 15;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LAST_LINE_END;
         getContentPane().add(bCancel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 13;
-        gridBagConstraints.weightx = 0.1;
-        getContentPane().add(filler1, gridBagConstraints);
 
         xDebugMode.setText("Debug mode");
         xDebugMode.setToolTipText("Enables debug console (requires launcher restart).");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 13;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_TRAILING;
         getContentPane().add(xDebugMode, gridBagConstraints);
 
         bSubmitDiagInfo.setText("Submit diagnostic information");
@@ -525,23 +565,30 @@ final class PreferencesScreen extends javax.swing.JDialog {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 14;
+        gridBagConstraints.gridy = 13;
         gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         getContentPane().add(bSubmitDiagInfo, gridBagConstraints);
 
-        xKeepOpen.setText("Keep launcher open");
-        xKeepOpen.setToolTipText("Keep launcher open after the game client starts.");
+        xKeepOpen.setText("Keep launcher open after launching the game");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         getContentPane().add(xKeepOpen, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void xFullscreenStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_xFullscreenStateChanged
+        checkIfSettingsShouldBeEnabled();
+    }//GEN-LAST:event_xFullscreenStateChanged
+
+    private void xAutoSizeStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_xAutoSizeStateChanged
+        checkIfSettingsShouldBeEnabled();
+    }//GEN-LAST:event_xAutoSizeStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.chargedminers.launcher.gui.JNiceLookingButton bCancel;
@@ -552,12 +599,13 @@ final class PreferencesScreen extends javax.swing.JDialog {
     private com.chargedminers.launcher.gui.JNiceLookingButton bSave;
     private com.chargedminers.launcher.gui.JNiceLookingButton bSubmitDiagInfo;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSpinner nMemory;
+    private javax.swing.JSpinner nHeight;
+    private javax.swing.JSpinner nWidth;
     private javax.swing.JRadioButton rUpdateAutomatic;
     private javax.swing.JRadioButton rUpdateDisabled;
     private javax.swing.JRadioButton rUpdateNotify;
     private javax.swing.ButtonGroup rgUpdateMode;
-    private javax.swing.JTextField tJavaArgs;
+    private javax.swing.JCheckBox xAutoSize;
     private javax.swing.JCheckBox xDebugMode;
     private javax.swing.JCheckBox xFullscreen;
     private javax.swing.JCheckBox xKeepOpen;

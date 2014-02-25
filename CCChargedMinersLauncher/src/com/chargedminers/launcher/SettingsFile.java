@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SettingsFile {
+class SettingsFile {
 
     private static final String COMMENT_PATTERN = "^\\s*#",
             SETTING_PATTERN = "^\\s*(\\S+?)\\s*=\\s*(\\S*)$",
@@ -20,10 +20,13 @@ public class SettingsFile {
     private static final Pattern settingPattern = Pattern.compile(SETTING_PATTERN),
             settingLiteralPattern = Pattern.compile(SETTING_LITERAL_PATTERN);
 
-    private HashMap<String, String> store = new HashMap<>();
+    private final HashMap<String, String> store = new HashMap<>();
 
-    public void load(File file) throws IOException {
+    public boolean load(File file) throws IOException {
         store.clear();
+        if (!file.exists()) {
+            return false;
+        }
         try (FileReader fr = new FileReader(file)) {
             try (BufferedReader br = new BufferedReader(fr)) {
                 for (String line; (line = br.readLine()) != null;) {
@@ -42,6 +45,7 @@ public class SettingsFile {
                 }
             }
         }
+        return true;
     }
 
     public void save(File file) throws IOException {
