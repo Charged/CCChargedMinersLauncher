@@ -2,25 +2,24 @@ package com.chargedminers.shared;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 
 // Code shared between Launcher and SelfUpdater. The two source files are identical.
 // These two classes cannot be combined into one because SelfUpdater must be able to
 // run without referencing the Launcher, and vice versa.
 public class SharedUpdaterCode {
 
-    public static final String BASE_URL = "http://cdn.charged-miners.com/",
-            LAUNCHER_DIR_NAME = ".com.chargedminers.launcher",
-            MAC_PATH_SUFFIX = "/Library/Application Support",
+    public static final String BASE_URL = "http://cm-cdn.fcraft.net/",
+            DATA_DIR_NAME = "charge",
+            MAC_PATH_SUFFIX = "Library/Application Support",
+            NIX_PATH_SUFFIX = ".config",
             LAUNCHER_NEW_JAR_NAME = "launcher.jar.new";
-    private static Constructor<?> constructor;
     private static File launcherPath,
             appDataPath;
 
-    public static synchronized File getLauncherDir() throws IOException {
+    public static synchronized File getDataDir() throws IOException {
         if (launcherPath == null) {
             final File userDir = getAppDataDir();
-            launcherPath = new File(userDir, LAUNCHER_DIR_NAME);
+            launcherPath = new File(userDir, DATA_DIR_NAME);
             if (!launcherPath.exists() && !launcherPath.mkdirs()) {
                 throw new IOException("Unable to create directory " + launcherPath);
             }
@@ -45,6 +44,10 @@ public class SharedUpdaterCode {
 
                 case MACOS:
                     appDataPath = new File(home, MAC_PATH_SUFFIX);
+                    break;
+
+                case NIX:
+                    appDataPath = new File(home, NIX_PATH_SUFFIX);
                     break;
 
                 default:

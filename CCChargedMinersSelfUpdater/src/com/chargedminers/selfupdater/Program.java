@@ -30,7 +30,7 @@ public class Program {
         System.setProperty("java.net.preferIPv4Stack", "true");
 
         try {
-            launcherDir = SharedUpdaterCode.getLauncherDir();
+            launcherDir = SharedUpdaterCode.getDataDir();
         } catch (IOException ex) {
             fatalError("Error finding launcher's directory.", ex);
         }

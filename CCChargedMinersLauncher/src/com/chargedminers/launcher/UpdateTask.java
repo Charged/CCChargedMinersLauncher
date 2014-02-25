@@ -106,7 +106,7 @@ public final class UpdateTask
         deployFile(downloadedFile, file.targetName);
     }
 
-    // Make a list of all local names, for logging
+    // Make a list of local names for all files that we intend to download, for logging
     private static String listFileNames(final List<FileToDownload> files) {
         if (files == null) {
             throw new NullPointerException("files");
@@ -238,24 +238,31 @@ public final class UpdateTask
         return filesToDownload;
     }
 
-    private FileToDownload launcherJarFile;
+    private FileToDownload launcherJarFile, primaryBinaryFile, secondaryBinaryFile;
 
     private List<FileToDownload> listBinaries()
             throws IOException {
-        final List<FileToDownload> binaryFiles = new ArrayList<>();
+        List<FileToDownload> localFiles = new ArrayList<>();
+        final File dataDir = SharedUpdaterCode.getDataDir();
 
-        final File clientDir = PathUtil.getClientDir();
-        final File launcherDir = SharedUpdaterCode.getLauncherDir();
+        launcherJarFile = new FileToDownload(SharedUpdaterCode.BASE_URL + "launcher/",
+                "launcher.jar",
+                new File(dataDir, LAUNCHER_JAR),
+                new File(dataDir, SharedUpdaterCode.LAUNCHER_NEW_JAR_NAME));
+        localFiles.add(launcherJarFile);
 
-        launcherJarFile = new FileToDownload(SharedUpdaterCode.BASE_URL, "launcher.jar.pack.lzma",
-                new File(launcherDir, LAUNCHER_JAR),
-                new File(launcherDir, SharedUpdaterCode.LAUNCHER_NEW_JAR_NAME));
-        binaryFiles.add(launcherJarFile);
+        String primaryBinaryName = PathUtil.getBinaryName(true);
+        primaryBinaryFile = new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/",
+                primaryBinaryName, new File(dataDir, primaryBinaryName));
+        localFiles.add(primaryBinaryFile);
 
-        binaryFiles.add(new FileToDownload(SharedUpdaterCode.BASE_URL, "client.jar.pack.lzma",
-                new File(clientDir, "client.jar")));
-
-        return binaryFiles;
+        String altBinaryName = PathUtil.getBinaryName(false);
+        if (altBinaryName != null) {
+            secondaryBinaryFile = new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/",
+                    altBinaryName, new File(dataDir, altBinaryName));
+            localFiles.add(secondaryBinaryFile);
+        }
+        return localFiles;
     }
 
     // get a list of binaries available from CC.net
@@ -305,31 +312,6 @@ public final class UpdateTask
         }
         sb.append(s);
         return sb.toString();
-    }
-
-    private static FileToDownload pickGameDownload() {
-        final String osSuffix;
-        String architecture = "i386";
-        switch (OperatingSystem.detect()) {
-            case WINDOWS:
-                osSuffix = "exe";
-                break;
-            case MACOS:
-                osSuffix = "MacOSX";
-                break;
-            case NIX:
-                osSuffix = "Linux";
-                if (System.getProperty("os.arch").contains("64")) {
-                    architecture = "x86_64";
-                }
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
-
-        final String remoteName = "Charge." + architecture + "." + osSuffix;
-        final File localPath = new File(PathUtil.getClientDir(), remoteName);
-        return new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/", remoteName, localPath);
     }
 
     private File downloadFile(final FileToDownload file)

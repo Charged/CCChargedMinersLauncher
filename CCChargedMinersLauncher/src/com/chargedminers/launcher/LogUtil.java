@@ -18,8 +18,8 @@ public final class LogUtil {
     public static void init() throws IOException {
         logger.setLevel(Level.ALL);
 
-        final File logFile = new File(SharedUpdaterCode.getLauncherDir(), PathUtil.LOG_FILE_NAME);
-        final File logOldFile = new File(SharedUpdaterCode.getLauncherDir(), PathUtil.LOG_OLD_FILE_NAME);
+        final File logFile = new File(SharedUpdaterCode.getDataDir(), PathUtil.LOG_FILE_NAME);
+        final File logOldFile = new File(SharedUpdaterCode.getDataDir(), PathUtil.LOG_OLD_FILE_NAME);
 
         // If a logfile already exists, rename it to "launcher.old.log"
         if (logFile.exists()) {

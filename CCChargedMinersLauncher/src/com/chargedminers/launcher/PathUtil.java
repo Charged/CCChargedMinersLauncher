@@ -17,29 +17,12 @@ import com.chargedminers.shared.SharedUpdaterCode;
 
 final class PathUtil {
 
-    public static final String CLIENT_DIR_NAME = ".net.classicube.client",
-            LOG_FILE_NAME = "launcher.log",
+    public static final String LOG_FILE_NAME = "launcher.log",
             LOG_OLD_FILE_NAME = "launcher.old.log",
-            CLIENT_LOG_FILE_NAME = "client.log",
-            CLIENT_LOG_OLD_FILE_NAME = "client.old.log",
-            OPTIONS_FILE_NAME = "options.txt",
+            CLIENT_LOG_FILE_NAME = "log.txt",
+            CLIENT_LOG_OLD_FILE_NAME = "log.old.txt",
+            OPTIONS_FILE_NAME = "settings.ini",
             SELF_UPDATER_LOG_FILE_NAME = "selfupdater.log";
-    private static File clientPath;
-
-    // Find client's directory. If it does not exist, create it.
-    public synchronized static File getClientDir() {
-        if (clientPath == null) {
-            clientPath = new File(SharedUpdaterCode.getAppDataDir(), CLIENT_DIR_NAME);
-        }
-        if (!clientPath.exists() && !clientPath.mkdirs()) {
-            throw new RuntimeException("The working directory could not be created: " + clientPath);
-        }
-        return clientPath;
-    }
-
-    public static File getJavaPath() {
-        return new File(System.getProperty("java.home"), "bin/java");
-    }
 
     // Safely replace contents of destFile with sourceFile.
     public synchronized static void replaceFile(final File sourceFile, final File destFile)
@@ -80,6 +63,35 @@ final class PathUtil {
                 }
             }
         }
+    }
+
+    static String getBinaryName(boolean primary) {
+        boolean isX64 = System.getProperty("os.arch").contains("64");
+        String architecture;
+        if (isX64 && primary) {
+            architecture = "x86_64";
+        } else if (!isX64 && !primary) {
+            return null;
+        } else {
+            architecture = "i386";
+        }
+
+        final String osSuffix;
+        switch (SharedUpdaterCode.OperatingSystem.detect()) {
+            case WINDOWS:
+                osSuffix = "exe";
+                break;
+            case MACOS:
+                osSuffix = "MacOSX";
+                break;
+            case NIX:
+                osSuffix = "Linux";
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
+        return "Charge." + architecture + "." + osSuffix;
     }
 
     private PathUtil() {

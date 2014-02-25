@@ -7,60 +7,50 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import com.chargedminers.launcher.gui.DebugWindow;
 import com.chargedminers.launcher.gui.ErrorScreen;
+import com.chargedminers.shared.SharedUpdaterCode;
+import java.io.FileNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
 // Handles launching the client process.
 final public class ClientLauncher {
 
-    private static final String ClassPath = "client.jar" + File.pathSeparatorChar + "libs/*",
-            ClientClassPath = "com.oyasunadev.mcraft.client.core.ClassiCubeStandalone";
-
     public static void launchClient(final ServerJoinInfo joinInfo) {
         LogUtil.getLogger().info("launchClient");
-
-        if (joinInfo != null) {
-            SessionManager.getSession().storeResumeInfo(joinInfo);
-        }// else if joinInfo==null, then we're launching singleplayer
-
-        final File java = PathUtil.getJavaPath();
-
-        final String nativePath;
-        try {
-            nativePath = new File(PathUtil.getClientDir(), "natives").getCanonicalPath();
-        } catch (final IOException | SecurityException ex) {
-            ErrorScreen.show("Could not launch the game",
-                    "Error finding the LWJGL native library path:<br>" + ex.getMessage(), ex);
-            return;
+        if (joinInfo == null) {
+            throw new NullPointerException("joinInfo");
         }
 
         try {
-            String mppass;
-            if (joinInfo == null || joinInfo.pass == null || joinInfo.pass.length() == 0) {
-                mppass = "none";
-            } else {
-                mppass = joinInfo.pass;
+            // Find the game binary
+            File binaryFile = new File(PathUtil.getBinaryName(false));
+            if (!binaryFile.exists()) {
+                binaryFile = new File(PathUtil.getBinaryName(true));
+            }
+            if (!binaryFile.exists()) {
+                throw new FileNotFoundException("Could not find the game executable! "
+                        + "Something must've gone wrong in the update process.");
             }
 
-            final ProcessBuilder processBuilder = new ProcessBuilder(
-                    java.getAbsolutePath(),
-                    "-cp",
-                    ClassPath,
-                    "-Djava.library.path=" + nativePath,
-                    Prefs.getJavaArgs(),
-                    "-Xmx" + Prefs.getMaxMemory() + "m",
-                    ClientClassPath,
-                    (joinInfo == null ? "none" : joinInfo.address.getHostAddress()),
-                    (joinInfo == null ? "0" : Integer.toString(joinInfo.port)),
-                    (joinInfo == null ? "none" : joinInfo.playerName),
-                    mppass,
-                    SessionManager.getSession().getSkinUrl(),
-                    Boolean.toString(Prefs.getFullscreen()));
+            // Chmod +x, if needed
+            if (!binaryFile.canExecute()) {
+                binaryFile.setExecutable(true);
+            }
 
-            processBuilder.directory(PathUtil.getClientDir());
+            // Pack joinInfo's information into an mc:// URI
+            String mcUrl = String.format("mc://%s:%d/%s/%s",
+                    joinInfo.address, joinInfo.port, joinInfo.playerName,
+                    (joinInfo.pass != null ? joinInfo.pass : ""));
+
+            final ProcessBuilder processBuilder = new ProcessBuilder(
+                    binaryFile.getName(), mcUrl
+                    //, "SKIN_SERVER=" + SessionManager.getSession().getSkinUrl() // TODO: when CM supports it
+            );
+
+            processBuilder.directory(SharedUpdaterCode.getDataDir());
 
             // log the command used to launch client
             String cmdLineToLog = StringUtils.join(processBuilder.command(), ' ');
-            if (joinInfo != null && joinInfo.pass != null && joinInfo.pass.length() > 16) {
+            if (joinInfo.pass != null && joinInfo.pass.length() > 16) {
                 // sanitize mppass -- we don't want it logged.
                 cmdLineToLog = cmdLineToLog.replace(joinInfo.pass, "########");
             }

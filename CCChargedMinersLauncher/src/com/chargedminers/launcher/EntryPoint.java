@@ -22,7 +22,7 @@ public final class EntryPoint {
 
         // Create launcher's data dir and init logger
         try {
-            SharedUpdaterCode.getLauncherDir();
+            SharedUpdaterCode.getDataDir();
             LogUtil.init();
 
         } catch (final IOException ex) {

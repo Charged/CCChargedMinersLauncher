@@ -30,18 +30,23 @@ public class DiagnosticInfoUploader {
         // gather files for uploading
         final String sysData = getSystemProperties();
         final String dirData = gatherDirStructure();
-        final String clientLogData = readLogFile(PathUtil.getClientDir(), PathUtil.CLIENT_LOG_FILE_NAME);
-        final String clientOldLogData = readLogFile(PathUtil.getClientDir(), PathUtil.CLIENT_LOG_OLD_FILE_NAME);
-        final String selfUpdaterLogData = readLogFile(PathUtil.getClientDir(), PathUtil.SELF_UPDATER_LOG_FILE_NAME);
-        final String optionsData = readLogFile(PathUtil.getClientDir(), PathUtil.OPTIONS_FILE_NAME);
+        
         String launcherLogData = null,
-                launcherOldLogData = null;
+                launcherOldLogData = null,
+                clientLogData = null,
+                clientOldLogData = null,
+                selfUpdaterLogData = null,
+                optionsData = null;
         try {
-            launcherLogData = readLogFile(SharedUpdaterCode.getLauncherDir(), PathUtil.LOG_FILE_NAME);
-            launcherOldLogData = readLogFile(SharedUpdaterCode.getLauncherDir(), PathUtil.LOG_OLD_FILE_NAME);
+            clientLogData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.CLIENT_LOG_FILE_NAME);
+            clientOldLogData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.CLIENT_LOG_OLD_FILE_NAME);
+            selfUpdaterLogData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.SELF_UPDATER_LOG_FILE_NAME);
+            optionsData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.OPTIONS_FILE_NAME);
+            launcherLogData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.LOG_FILE_NAME);
+            launcherOldLogData = readLogFile(SharedUpdaterCode.getDataDir(), PathUtil.LOG_OLD_FILE_NAME);
         } catch (final IOException ex) {
             // Theoretically this should never happen.
-            LogUtil.getLogger().log(Level.SEVERE, "Could not find launcher directory!", ex);
+            LogUtil.getLogger().log(Level.SEVERE, "Could not find data directory!", ex);
         }
 
         // construct a Gist API request (JSON)
@@ -140,11 +145,11 @@ public class DiagnosticInfoUploader {
     private static String gatherDirStructure() {
         try {
             final StringBuilder sb = new StringBuilder();
-            final String absClientDir = PathUtil.getClientDir().getAbsolutePath();
-            sb.append("Client directory structure:\n");
-            walkDir(Paths.get(absClientDir), sb);
+            final String absDir = SharedUpdaterCode.getDataDir().getAbsolutePath();
+            sb.append("Data directory structure:\n");
+            walkDir(Paths.get(absDir), sb);
 
-            final String absLauncherDir = SharedUpdaterCode.getLauncherDir().getAbsolutePath();
+            final String absLauncherDir = SharedUpdaterCode.getDataDir().getAbsolutePath();
             sb.append("\nLauncher directory structure:\n");
             walkDir(Paths.get(absLauncherDir), sb);
 
