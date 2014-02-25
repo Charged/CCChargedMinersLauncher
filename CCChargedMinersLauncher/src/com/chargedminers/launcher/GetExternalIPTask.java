@@ -1,10 +1,10 @@
 package com.chargedminers.launcher;
 
+import com.chargedminers.launcher.gui.ErrorScreen;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
-import com.chargedminers.launcher.gui.ErrorScreen;
 
 // Retrieves the client's external IP,
 // to check whether server and client are located on the same machine or network.

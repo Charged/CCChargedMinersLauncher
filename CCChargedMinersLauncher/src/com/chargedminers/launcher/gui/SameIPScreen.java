@@ -1,5 +1,7 @@
 package com.chargedminers.launcher.gui;
 
+import com.chargedminers.launcher.LogUtil;
+import com.chargedminers.launcher.Prefs;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -9,8 +11,6 @@ import java.util.logging.Level;
 import java.util.prefs.Preferences;
 import javax.swing.JDialog;
 import javax.swing.border.EmptyBorder;
-import com.chargedminers.launcher.LogUtil;
-import com.chargedminers.launcher.Prefs;
 
 public class SameIPScreen extends JDialog {
 

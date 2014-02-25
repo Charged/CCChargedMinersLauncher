@@ -1,5 +1,9 @@
 package com.chargedminers.launcher;
 
+import com.chargedminers.launcher.gui.DebugWindow;
+import com.chargedminers.launcher.gui.ErrorScreen;
+import com.chargedminers.launcher.gui.SignInScreen;
+import com.chargedminers.shared.SharedUpdaterCode;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
@@ -8,10 +12,6 @@ import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-import com.chargedminers.launcher.gui.DebugWindow;
-import com.chargedminers.launcher.gui.ErrorScreen;
-import com.chargedminers.launcher.gui.SignInScreen;
-import com.chargedminers.shared.SharedUpdaterCode;
 
 // Contains initialization code for the whole launcher
 public final class EntryPoint {

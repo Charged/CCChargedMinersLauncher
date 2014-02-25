@@ -1,14 +1,14 @@
 package com.chargedminers.launcher;
 
+import com.chargedminers.launcher.gui.DebugWindow;
+import com.chargedminers.launcher.gui.ErrorScreen;
+import com.chargedminers.shared.SharedUpdaterCode;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
-import com.chargedminers.launcher.gui.DebugWindow;
-import com.chargedminers.launcher.gui.ErrorScreen;
-import com.chargedminers.shared.SharedUpdaterCode;
-import java.io.FileNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
 // Handles launching the client process.

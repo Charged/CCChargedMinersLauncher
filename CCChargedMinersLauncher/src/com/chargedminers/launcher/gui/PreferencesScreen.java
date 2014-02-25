@@ -1,5 +1,12 @@
 package com.chargedminers.launcher.gui;
 
+import com.chargedminers.launcher.AccountManager;
+import com.chargedminers.launcher.DiagnosticInfoUploader;
+import com.chargedminers.launcher.GameServiceType;
+import com.chargedminers.launcher.LogUtil;
+import com.chargedminers.launcher.Prefs;
+import com.chargedminers.launcher.SessionManager;
+import com.chargedminers.launcher.UpdateMode;
 import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.util.logging.Level;
@@ -8,13 +15,6 @@ import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 import javax.swing.JRootPane;
 import javax.swing.border.EmptyBorder;
-import com.chargedminers.launcher.AccountManager;
-import com.chargedminers.launcher.DiagnosticInfoUploader;
-import com.chargedminers.launcher.GameServiceType;
-import com.chargedminers.launcher.LogUtil;
-import com.chargedminers.launcher.Prefs;
-import com.chargedminers.launcher.SessionManager;
-import com.chargedminers.launcher.UpdateMode;
 
 final class PreferencesScreen extends javax.swing.JDialog {
     // =============================================================================================

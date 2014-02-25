@@ -1,5 +1,13 @@
 package com.chargedminers.launcher.gui;
 
+import com.chargedminers.launcher.GameServiceType;
+import com.chargedminers.launcher.GameSession;
+import com.chargedminers.launcher.GetExternalIPTask;
+import com.chargedminers.launcher.LogUtil;
+import com.chargedminers.launcher.Prefs;
+import com.chargedminers.launcher.ServerJoinInfo;
+import com.chargedminers.launcher.ServerListEntry;
+import com.chargedminers.launcher.SessionManager;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
@@ -29,14 +37,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import com.chargedminers.launcher.GameServiceType;
-import com.chargedminers.launcher.GameSession;
-import com.chargedminers.launcher.GetExternalIPTask;
-import com.chargedminers.launcher.LogUtil;
-import com.chargedminers.launcher.Prefs;
-import com.chargedminers.launcher.ServerJoinInfo;
-import com.chargedminers.launcher.ServerListEntry;
-import com.chargedminers.launcher.SessionManager;
 
 public final class ServerListScreen extends javax.swing.JFrame {
     // =============================================================================================

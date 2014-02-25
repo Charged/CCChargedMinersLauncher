@@ -1,5 +1,12 @@
 package com.chargedminers.launcher.gui;
 
+import com.chargedminers.launcher.ClientLauncher;
+import com.chargedminers.launcher.LogUtil;
+import com.chargedminers.launcher.Prefs;
+import com.chargedminers.launcher.ServerJoinInfo;
+import com.chargedminers.launcher.SessionManager;
+import com.chargedminers.launcher.UpdateMode;
+import com.chargedminers.launcher.UpdateTask;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
@@ -9,13 +16,6 @@ import java.util.logging.Level;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
 import javax.swing.border.EmptyBorder;
-import com.chargedminers.launcher.ClientLauncher;
-import com.chargedminers.launcher.LogUtil;
-import com.chargedminers.launcher.Prefs;
-import com.chargedminers.launcher.ServerJoinInfo;
-import com.chargedminers.launcher.SessionManager;
-import com.chargedminers.launcher.UpdateMode;
-import com.chargedminers.launcher.UpdateTask;
 
 public final class UpdateScreen extends JFrame {
     // =============================================================================================

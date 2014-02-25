@@ -1,5 +1,7 @@
 package com.chargedminers.launcher;
 
+import com.chargedminers.launcher.gui.UpdateScreen;
+import com.chargedminers.shared.SharedUpdaterCode;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,11 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingWorker;
-import com.chargedminers.launcher.gui.UpdateScreen;
-import com.chargedminers.shared.SharedUpdaterCode;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.SwingWorker;
 
 // Handles downloading and deployment of client updates,
 // as well as resource files used by the client.
@@ -255,18 +255,18 @@ public final class UpdateTask
         localFiles.add(launcherJarFile);
 
         String primaryPlatform = PathUtil.getBinaryName(true);
-        if (remoteIndex.containsKey(primaryPlatform)) {
+        if (remoteIndex.containsKey(primaryPlatform.toLowerCase())) {
             localFiles.add(
                     new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/",
                             primaryPlatform, new File(dataDir, primaryPlatform)));
         } else {
             String altPlatform = PathUtil.getBinaryName(false);
-            if (altPlatform != null) {
+            if (altPlatform != null && remoteIndex.containsKey(altPlatform.toLowerCase())) {
                 localFiles.add(
                         new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/",
                                 altPlatform, new File(dataDir, altPlatform)));
             } else {
-                throw new RuntimeException("Could not find binaries that would work on your platform!");
+                throw new RuntimeException("Could not find binaries that would work on your platform: " + primaryPlatform);
             }
         }
         return localFiles;

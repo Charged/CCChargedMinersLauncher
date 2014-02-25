@@ -1,5 +1,15 @@
 package com.chargedminers.launcher.gui;
 
+import com.chargedminers.launcher.AccountManager;
+import com.chargedminers.launcher.GameServiceType;
+import com.chargedminers.launcher.GameSession;
+import com.chargedminers.launcher.GetExternalIPTask;
+import com.chargedminers.launcher.LogUtil;
+import com.chargedminers.launcher.Prefs;
+import com.chargedminers.launcher.ServerJoinInfo;
+import com.chargedminers.launcher.SessionManager;
+import com.chargedminers.launcher.SignInResult;
+import com.chargedminers.launcher.UserAccount;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -26,16 +36,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
-import com.chargedminers.launcher.AccountManager;
-import com.chargedminers.launcher.GameServiceType;
-import com.chargedminers.launcher.GameSession;
-import com.chargedminers.launcher.GetExternalIPTask;
-import com.chargedminers.launcher.LogUtil;
-import com.chargedminers.launcher.Prefs;
-import com.chargedminers.launcher.ServerJoinInfo;
-import com.chargedminers.launcher.SessionManager;
-import com.chargedminers.launcher.SignInResult;
-import com.chargedminers.launcher.UserAccount;
 
 // Sign-in screen! First thing the user sees.
 // Instantiated and first shown by EntryPoint.main

@@ -1,11 +1,11 @@
 package com.chargedminers.launcher.gui;
 
+import com.chargedminers.launcher.LogUtil;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
-import com.chargedminers.launcher.LogUtil;
 
 // Static class that keeps track of loading (lazily) our resource files.
 // Currently just handles the 4 texture images for SignInScreen.

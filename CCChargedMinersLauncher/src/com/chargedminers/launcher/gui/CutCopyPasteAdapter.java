@@ -1,5 +1,6 @@
 package com.chargedminers.launcher.gui;
 
+import com.chargedminers.launcher.LogUtil;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -16,7 +17,6 @@ import java.util.logging.Level;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.text.JTextComponent;
-import com.chargedminers.launcher.LogUtil;
 
 public class CutCopyPasteAdapter extends MouseAdapter implements ClipboardOwner {
 
