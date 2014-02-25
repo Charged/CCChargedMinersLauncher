@@ -49,7 +49,6 @@ public class Program {
                     downloadLauncher();
                     progressWindow.dispose();
                 }
-                SharedUpdaterCode.testLzma(logger);
                 startLauncher(launcherJar);
                 return;
             } catch (final Exception ex) {
@@ -87,16 +86,9 @@ public class Program {
     }
 
     private static void downloadLauncher() throws IOException {
-        final File lzmaJar = new File(launcherDir, SharedUpdaterCode.LZMA_JAR_NAME);
-        if (!lzmaJar.exists()) {
-            final File lzmaTempFile = downloadFile("lzma.jar");
-            replaceFile(lzmaTempFile, lzmaJar);
-        }
         final File launcherTempFile = downloadFile("launcher.jar.pack.lzma");
         try {
-            final File processedLauncherFile = SharedUpdaterCode.processDownload(
-                    logger, launcherTempFile, "launcher.jar.pack.lzma", "launcher.jar");
-            replaceFile(processedLauncherFile, launcherJar);
+            replaceFile(launcherTempFile, launcherJar);
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Error unpacking launcher.jar", ex);
             throw new IOException("Error unpacking launcher.jar", ex);

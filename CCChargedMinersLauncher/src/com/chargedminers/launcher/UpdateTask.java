@@ -12,16 +12,11 @@ import java.net.URL;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
-import java.util.zip.ZipEntry;
 import javax.swing.SwingWorker;
 import com.chargedminers.launcher.gui.UpdateScreen;
 import com.chargedminers.shared.SharedUpdaterCode;
@@ -35,7 +30,7 @@ public final class UpdateTask
     // =============================================================================================
     //                                                                    CONSTANTS & INITIALIZATION
     // =============================================================================================
-    private static final int MAX_PARALLEL_DOWNLOADS = 5;
+    private static final int MAX_PARALLEL_DOWNLOADS = 2;
     private static final UpdateTask instance = new UpdateTask();
 
     public static UpdateTask getInstance() {
@@ -57,13 +52,12 @@ public final class UpdateTask
     @Override
     protected Boolean doInBackground()
             throws Exception {
-        this.digest = MessageDigest.getInstance("SHA1");
+        this.digest = MessageDigest.getInstance("MD5");
         final Logger logger = LogUtil.getLogger();
 
         // build up file list
         logger.log(Level.INFO, "Checking for updates.");
         files.addAll(pickBinariesToDownload());
-        files.addAll(pickResourcesToDownload());
 
         if (files.isEmpty()) {
             logger.log(Level.INFO, "No updates needed.");
@@ -108,13 +102,8 @@ public final class UpdateTask
         // step 1: download
         final File downloadedFile = downloadFile(file);
 
-        // step 2: unpack
-        final File processedFile = SharedUpdaterCode.processDownload(
-                LogUtil.getLogger(),
-                downloadedFile, file.baseUrl + file.remoteName, file.targetName.getName());
-
-        // step 3: deploy
-        deployFile(processedFile, file.targetName);
+        // step 2: deploy
+        deployFile(downloadedFile, file.targetName);
     }
 
     // Make a list of all local names, for logging
@@ -159,44 +148,8 @@ public final class UpdateTask
     //                                                                        CHECKING / DOWNLOADING
     // =============================================================================================
     private MessageDigest digest;
-    public static final String FILE_INDEX_URL = "http://www.classicube.net/static/client/version",
-            RESOURCE_LIST_URL = "http://www.classicube.net/static/client/reslist",
-            RESOURCE_DOWNLOAD_URL = "https://s3.amazonaws.com/MinecraftResources/",
+    public static final String FILE_INDEX_URL = SharedUpdaterCode.BASE_URL + "releases/version.txt",
             LAUNCHER_JAR = "launcher.jar";
-
-    private List<FileToDownload> pickResourcesToDownload()
-            throws IOException {
-        final List<FileToDownload> pickedFiles = new ArrayList<>();
-
-        final File resDir = new File(PathUtil.getClientDir(), "resources");
-        HashMap<String, String> resList = getRemoteResourceList();
-
-        for (Map.Entry<String, String> entry : resList.entrySet()) {
-            String resFileName = entry.getKey();
-            final File resFile = new File(resDir, resFileName);
-            boolean doDownload = false;
-            if (!resFile.exists()) {
-                // If file does not exist, definitely download it.
-                doDownload = true;
-            } else {
-                // Make sure that the file contents match.
-                try (InputStream is = new FileInputStream(resFile)) {
-                    String localHash = computeHash(is);
-                    String expectedHash = entry.getValue();
-                    if (!localHash.equals(expectedHash)) {
-                        LogUtil.getLogger().log(Level.WARNING,
-                                "Resource hash mismatch for file {0}! Expected {1}, got {2}. Will re-download.",
-                                new Object[]{resFileName, expectedHash, localHash});
-                        doDownload = true;
-                    }
-                }
-            }
-            if (doDownload) {
-                pickedFiles.add(new FileToDownload(RESOURCE_DOWNLOAD_URL, resFileName, resFile));
-            }
-        }
-        return pickedFiles;
-    }
 
     private List<FileToDownload> pickBinariesToDownload()
             throws IOException {
@@ -219,7 +172,6 @@ public final class UpdateTask
             File fileToHash = localFile.localName;
 
             // lzma.jar and launcher.jar get special treatment
-            boolean isLzma = (localFile == lzmaJarFile);
             boolean isLauncherJar = (localFile == launcherJarFile);
 
             if (isLauncherJar) {
@@ -247,11 +199,11 @@ public final class UpdateTask
                         "Will download {0}: does not exist locally", localFile.localName.getName());
                 download = true;
 
-            } else if (updateExistingFiles && !isLzma) {
+            } else if (updateExistingFiles) {
                 // If local file exists, but may need updating
                 if (remoteFile != null) {
                     try {
-                        final String localHash = computeManifestHash(fileToHash);
+                        final String localHash = computeFileHash(fileToHash);
                         if (!localHash.equalsIgnoreCase(remoteFile.hash)) {
                             // If file contents don't match
                             LogUtil.getLogger().log(Level.INFO,
@@ -272,21 +224,10 @@ public final class UpdateTask
                     LogUtil.getLogger().log(Level.WARNING,
                             "No remote match for local file {0}", fileToHash.getName());
                 }
-            } else if (isLzma) {
-                // Make sure that lzma.jar is not corrupted
-                try {
-                    SharedUpdaterCode.testLzma(LogUtil.getLogger());
-                } catch (Exception ex) {
-                    LogUtil.getLogger().log(Level.SEVERE,
-                            "lzma.jar appears to be corrupted, and will be re-downloaded.", ex);
-                    download = true;
-                }
             }
 
             if (download) {
-                if (isLzma) {
-                    needLzma = true;
-                } else if (remoteFile == null) {
+                if (remoteFile == null) {
                     String errMsg = String.format("Required file \"%s%s\" cannot be found.",
                             localFile.baseUrl, localFile.remoteName);
                     throw new RuntimeException(errMsg);
@@ -297,7 +238,7 @@ public final class UpdateTask
         return filesToDownload;
     }
 
-    private FileToDownload lzmaJarFile, launcherJarFile, nativesFile;
+    private FileToDownload launcherJarFile;
 
     private List<FileToDownload> listBinaries()
             throws IOException {
@@ -305,10 +246,6 @@ public final class UpdateTask
 
         final File clientDir = PathUtil.getClientDir();
         final File launcherDir = SharedUpdaterCode.getLauncherDir();
-
-        lzmaJarFile = new FileToDownload(SharedUpdaterCode.BASE_URL, "lzma.jar",
-                new File(launcherDir, "lzma.jar"));
-        binaryFiles.add(lzmaJarFile);
 
         launcherJarFile = new FileToDownload(SharedUpdaterCode.BASE_URL, "launcher.jar.pack.lzma",
                 new File(launcherDir, LAUNCHER_JAR),
@@ -318,20 +255,11 @@ public final class UpdateTask
         binaryFiles.add(new FileToDownload(SharedUpdaterCode.BASE_URL, "client.jar.pack.lzma",
                 new File(clientDir, "client.jar")));
 
-        binaryFiles.add(new FileToDownload(SharedUpdaterCode.BASE_URL, "lwjgl.jar.pack.lzma",
-                new File(clientDir, "libs/lwjgl.jar")));
-        binaryFiles.add(new FileToDownload(SharedUpdaterCode.BASE_URL, "lwjgl_util.jar.pack.lzma",
-                new File(clientDir, "libs/lwjgl_util.jar")));
-        binaryFiles.add(new FileToDownload(SharedUpdaterCode.BASE_URL, "jinput.jar.pack.lzma",
-                new File(clientDir, "libs/jinput.jar")));
-
-        nativesFile = pickNativeDownload();
-        binaryFiles.add(nativesFile);
-
         return binaryFiles;
     }
 
     // get a list of binaries available from CC.net
+    // TODO: port VersionsTxt from old ChargedMinersLauncher
     private HashMap<String, RemoteFile> getRemoteIndex() {
         final String hashIndex = HttpUtil.downloadString(FILE_INDEX_URL);
         final HashMap<String, RemoteFile> remoteFiles = new HashMap<>();
@@ -340,12 +268,6 @@ public final class UpdateTask
         if (hashIndex == null) {
             return null;
         }
-
-        // special treatment for LZMA
-        final RemoteFile lzmaFile = new RemoteFile();
-        lzmaFile.name = SharedUpdaterCode.LZMA_JAR_NAME;
-        lzmaFile.hash = "N/A";
-        remoteFiles.put(lzmaFile.name.toLowerCase(), lzmaFile);
 
         // the rest of the files
         for (final String line : hashIndex.split("\\r?\\n")) {
@@ -358,57 +280,14 @@ public final class UpdateTask
         return remoteFiles;
     }
 
-    // Get a list of resource files to download (from MinecraftResources site).
-    // Returns a map with filenames for keys, and expected SHA1 hashes for values.
-    private HashMap<String, String> getRemoteResourceList() {
-        final String hashIndex = HttpUtil.downloadString(RESOURCE_LIST_URL);
-        final HashMap<String, String> remoteFiles = new HashMap<>();
-
-        // if getting the list failed, don't panic. Abort update instead.
-        if (hashIndex == null) {
-            return null;
-        }
-
-        // the rest of the files
-        for (final String line : hashIndex.split("\\r?\\n")) {
-            final String[] components = line.split(" ");
-            remoteFiles.put(components[0].toLowerCase(), components[1].toLowerCase());
-        }
-        return remoteFiles;
-    }
-
-    // Verifies signatures of all files inside the .jar, and returns SHA1 hash of the manifest.
-    private String computeManifestHash(final File clientJar)
-            throws IOException, SecurityException {
-        if (clientJar == null) {
-            throw new NullPointerException("clientJar");
-        }
-        try (final JarFile jarFile = new JarFile(clientJar)) {
-            final ZipEntry manifest = jarFile.getEntry("META-INF/MANIFEST.MF");
-            if (manifest == null) {
-                return "<none>";
-            }
-            // Ensure all the entries' signatures verify correctly
-            byte[] buffer = new byte[64 * 1024];
-            for (JarEntry je : Collections.list(jarFile.entries())) {
-                try (InputStream is = jarFile.getInputStream(je)) {
-                    while (is.read(buffer, 0, buffer.length) != -1) {
-                        // SecurityException will be thrown by .read() if a signature check fails.
-                    }
-                }
-            }
-            try (final InputStream is = jarFile.getInputStream(manifest)) {
-                return computeHash(is);
-            }
-        }
-    }
-
-    private String computeHash(InputStream is)
+    private String computeFileHash(File file)
             throws FileNotFoundException, IOException {
-        final byte[] ioBuffer = new byte[64 * 1024];
-        try (final DigestInputStream dis = new DigestInputStream(is, digest)) {
-            while (dis.read(ioBuffer) != -1) {
-                // DigestInputStream is doing its job, we just need to read through it.
+        try (InputStream is = new FileInputStream(file)) {
+            final byte[] ioBuffer = new byte[64 * 1024];
+            try (final DigestInputStream dis = new DigestInputStream(is, digest)) {
+                while (dis.read(ioBuffer) != -1) {
+                    // DigestInputStream is doing its job, we just need to read through it.
+                }
             }
         }
         final byte[] localHashBytes = digest.digest();
@@ -428,28 +307,29 @@ public final class UpdateTask
         return sb.toString();
     }
 
-    private static FileToDownload pickNativeDownload() {
-        final String osName;
+    private static FileToDownload pickGameDownload() {
+        final String osSuffix;
+        String architecture = "i386";
         switch (OperatingSystem.detect()) {
             case WINDOWS:
-                osName = "windows";
+                osSuffix = "exe";
                 break;
             case MACOS:
-                osName = "macosx";
+                osSuffix = "MacOSX";
                 break;
             case NIX:
-                osName = "linux";
-                break;
-            case SOLARIS:
-                osName = "solaris";
+                osSuffix = "Linux";
+                if (System.getProperty("os.arch").contains("64")) {
+                    architecture = "x86_64";
+                }
                 break;
             default:
                 throw new IllegalArgumentException();
         }
-        final String remoteName = osName + "_natives.jar";
-        final File localPath = new File(PathUtil.getClientDir(),
-                "natives/" + osName + "_natives.jar");
-        return new FileToDownload(SharedUpdaterCode.BASE_URL, remoteName, localPath);
+
+        final String remoteName = "Charge." + architecture + "." + osSuffix;
+        final File localPath = new File(PathUtil.getClientDir(), remoteName);
+        return new FileToDownload(SharedUpdaterCode.BASE_URL + "releases/", remoteName, localPath);
     }
 
     private File downloadFile(final FileToDownload file)
@@ -483,92 +363,8 @@ public final class UpdateTask
                 throw new IOException("Unable to make directory " + parentDir);
             }
             PathUtil.replaceFile(processedFile, targetFile);
-
-            // special handling for natives
-            if (targetFile == nativesFile.targetName) {
-                extractNatives();
-            }
         } catch (final IOException ex) {
             LogUtil.getLogger().log(Level.SEVERE, "Error deploying " + targetFile.getName(), ex);
-        }
-    }
-
-    // Extract the contents of natives jar file
-    void extractNatives()
-            throws FileNotFoundException, IOException {
-        LogUtil.getLogger().log(Level.FINE, "extractNatives({0})", nativesFile.targetName.getName());
-
-        final File nativeFolder = getNativesFolder();
-
-        try (final JarFile jarFile = new JarFile(nativesFile.targetName, true)) {
-            for (final JarEntry entry : Collections.list(jarFile.entries())) {
-                if (!entry.isDirectory() && (entry.getName().indexOf('/') == -1)) {
-                    final File outFile = new File(nativeFolder, entry.getName());
-                    if (outFile.exists() && !outFile.delete()) {
-                        LogUtil.getLogger().log(Level.SEVERE,
-                                "Could not replace native file: {0}", entry.getName());
-                        return;
-                    }
-                    extractNativeFile(jarFile, entry, outFile);
-                }
-            }
-        }
-    }
-
-    // Makes sure that everything from LWJGL's natives jar is properly deployed.
-    private void ensureNativesAreExtracted()
-            throws IOException {
-        final File nativeFolder = getNativesFolder();
-
-        try (final JarFile jarFile = new JarFile(nativesFile.targetName, true)) {
-            for (final JarEntry entry : Collections.list(jarFile.entries())) {
-                if (!entry.isDirectory() && (entry.getName().indexOf('/') == -1)) {
-                    final File outFile = new File(nativeFolder, entry.getName());
-                    if (!outFile.exists()) {
-                        LogUtil.getLogger().log(Level.WARNING,
-                                "Native library is missing, and will be re-extracted: {0}", outFile);
-                        extractNativeFile(jarFile, entry, outFile);
-                    } else if (outFile.length() != entry.getSize()
-                            || computeCRC32(outFile) != entry.getCrc()) {
-                        LogUtil.getLogger().log(Level.WARNING,
-                                "Native library is outdated or corrupted, and will be re-extracted: {0}", outFile);
-                        extractNativeFile(jarFile, entry, outFile);
-                    }
-                }
-            }
-        }
-    }
-
-    // Calculates the CRC32 checksum of a given file
-    public static long computeCRC32(final File file) throws IOException {
-        try (final FileInputStream fis = new FileInputStream(file)) {
-            try (final InputStream inputStream = new BufferedInputStream(fis)) {
-                final CRC32 crc = new CRC32();
-                int cnt;
-                while ((cnt = inputStream.read()) != -1) {
-                    crc.update(cnt);
-                }
-                return crc.getValue();
-            }
-        }
-    }
-
-    // Finds the folder that contains LWJGL natives. If it does not exist, it's created.
-    private File getNativesFolder() throws IOException {
-        final File nativeFolder = new File(PathUtil.getClientDir(), "natives");
-
-        if (!nativeFolder.exists() && !nativeFolder.mkdirs()) {
-            throw new IOException("Unable to make directory " + nativeFolder);
-        }
-
-        return nativeFolder;
-    }
-
-    // Extracts a file from given .jar archive
-    private void extractNativeFile(final JarFile jarFile, final JarEntry entry, final File destination)
-            throws IOException {
-        try (InputStream inStream = jarFile.getInputStream(entry)) {
-            PathUtil.copyStreamToFile(inStream, destination);
         }
     }
 
@@ -576,12 +372,6 @@ public final class UpdateTask
     private void verifyFiles(final List<FileToDownload> files) {
         if (files == null) {
             throw new NullPointerException("files");
-        }
-
-        try {
-            ensureNativesAreExtracted();
-        } catch (IOException ex) {
-            throw new RuntimeException("Update process failed. Unable to extract a required library file.", ex);
         }
 
         for (final FileToDownload file : files) {
