@@ -49,7 +49,6 @@ public final class SignInScreen extends javax.swing.JFrame {
     private UsernameOrPasswordChangedListener fieldChangeListener;
     private GameSession.SignInTask signInTask;
     private JPopupMenu resumeMenu;
-    private JMenuItem singlePlayerMenuItem;
     private JMenuItem directMenuItem;
     private boolean settingPasswordText;
 
@@ -97,7 +96,6 @@ public final class SignInScreen extends javax.swing.JFrame {
         bResume.setEnabled(false);
         bResumeDropDown.setEnabled(false);
         directMenuItem.setEnabled(false);
-        singlePlayerMenuItem.setEnabled(false);
         bSignIn.setEnabled(false);
         bPreferences.setEnabled(false);
         bChangeService.setEnabled(false);
@@ -115,7 +113,6 @@ public final class SignInScreen extends javax.swing.JFrame {
         tPassword.setEnabled(true);
         bResumeDropDown.setEnabled(true);
         directMenuItem.setEnabled(true);
-        singlePlayerMenuItem.setEnabled(true);
         enableResumeIfNeeded();
         checkIfSignInAllowed();
         bPreferences.setEnabled(true);
@@ -344,10 +341,6 @@ public final class SignInScreen extends javax.swing.JFrame {
         directMenuItem.addActionListener(new DirectMenuItemActionListener());
         resumeMenu.add(directMenuItem);
 
-        singlePlayerMenuItem = new JMenuItem("Single Player");
-        singlePlayerMenuItem.addActionListener(new SinglePlayerMenuItemActionListener());
-        resumeMenu.add(singlePlayerMenuItem);
-
         // The created menu is assigned to bResume in enableGUI()
     }
 
@@ -551,17 +544,6 @@ public final class SignInScreen extends javax.swing.JFrame {
             cUsername.removeAllItems();
         }
     }//GEN-LAST:event_bPreferencesActionPerformed
-
-    // launches a single-player game when [SinglePlayer] option is clicked on the split-button menu.
-    private class SinglePlayerMenuItemActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            LogUtil.getLogger().log(Level.FINE, "[SinglePlayer]");
-            if (!UpdateScreen.createAndShow(null)) {
-                dispose();
-            }
-        }
-    }
 
     // =============================================================================================
     //                                                                            GENERATED GUI CODE
