@@ -14,7 +14,7 @@ import java.util.logging.Level;
 final class HttpUtil {
 
     private static final int MaxRedirects = 3;
-    private static final String UserAgent = "ClassiCube Launcher";
+    private static final String UserAgent = "CCChargedMinersLauncher";
 
     public static HttpURLConnection makeHttpConnection(final String urlString, final byte[] postData)
             throws MalformedURLException, IOException {

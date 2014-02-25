@@ -148,13 +148,19 @@ public final class UpdateTask
     // =============================================================================================
     private MessageDigest digest;
     public static final String FILE_INDEX_URL = SharedUpdaterCode.BASE_URL + "releases/version.txt",
-            LAUNCHER_JAR = "launcher.jar";
+            LAUNCHER_JAR = "launcher.jar",
+            VERSION_COMMENT_PATTERN = "^\\s*#",
+            VERSION_PLATFORM_PATTERN = "^(\\S+)\\s*$",
+            VERSION_HASH_AND_NAME_PATTERN = "\\s*([a-fA-F0-9]{32})\\s+(\\S+)\\s*$";
+    private static final Pattern versionPlatformRegex = Pattern.compile(VERSION_PLATFORM_PATTERN),
+            versionDetailsRegex = Pattern.compile(VERSION_HASH_AND_NAME_PATTERN);
+    private FileToDownload launcherJarFile;
 
     private List<FileToDownload> pickBinariesToDownload()
             throws IOException {
         final List<FileToDownload> filesToDownload = new ArrayList<>();
         final HashMap<String, RemoteFile> remoteFiles = getRemoteIndex();
-        final List<FileToDownload> localFiles = listBinaries(remoteFiles);
+        final List<FileToDownload> binaries = listBinaries(remoteFiles);
         final boolean updateExistingFiles = (Prefs.getUpdateMode() != UpdateMode.DISABLED);
 
         // Getting remote file index failed. Abort update.
@@ -162,16 +168,16 @@ public final class UpdateTask
             return filesToDownload;
         }
 
-        for (final FileToDownload localFile : localFiles) {
-            signalCheckProgress(localFile.localName.getName());
+        for (final FileToDownload file : binaries) {
+            signalCheckProgress(file.localName.getName());
 
-            final RemoteFile remoteFile = remoteFiles.get(localFile.remoteName);
+            file.remoteFile = remoteFiles.get(file.platform.toLowerCase());
             boolean download = false;
-            boolean localFileMissing = !localFile.localName.exists();
-            File fileToHash = localFile.localName;
+            boolean localFileMissing = !file.localName.exists();
+            File fileToHash = file.localName;
 
             // lzma.jar and launcher.jar get special treatment
-            boolean isLauncherJar = (localFile == launcherJarFile);
+            boolean isLauncherJar = (file == launcherJarFile);
 
             if (isLauncherJar) {
                 if (localFileMissing) {
@@ -182,11 +188,11 @@ public final class UpdateTask
                             "launcher.jar is not present in its usual location!");
                     // We check if "launcher.jar.new" is up-to-date (instead of checking "launcher.jar"),
                     // and only download it if UpdateMode is not DISABLED.
-                    fileToHash = localFile.targetName;
-                    localFileMissing = !localFile.targetName.exists();
-                } else if (localFile.targetName.exists()) {
+                    fileToHash = file.targetName;
+                    localFileMissing = !file.targetName.exists();
+                } else if (file.targetName.exists()) {
                     // If "launcher.jar.new" already exists, just check if it's up-to-date.
-                    fileToHash = localFile.targetName;
+                    fileToHash = file.targetName;
                     LogUtil.getLogger().log(Level.WARNING,
                             "launcher.jar.new already exists: we're probably not running from self-updater.");
                 }
@@ -195,19 +201,19 @@ public final class UpdateTask
             if (localFileMissing) {
                 // If local file does not exist
                 LogUtil.getLogger().log(Level.INFO,
-                        "Will download {0}: does not exist locally", localFile.localName.getName());
+                        "Will download {0}: does not exist locally", file.localName.getName());
                 download = true;
 
             } else if (updateExistingFiles) {
                 // If local file exists, but may need updating
-                if (remoteFile != null) {
+                if (file.remoteFile != null) {
                     try {
                         final String localHash = computeFileHash(fileToHash);
-                        if (!localHash.equalsIgnoreCase(remoteFile.hash)) {
+                        if (!localHash.equalsIgnoreCase(file.remoteFile.hash)) {
                             // If file contents don't match
                             LogUtil.getLogger().log(Level.INFO,
                                     "Contents of {0} don''t match ({1} vs {2}). Will re-download.",
-                                    new Object[]{fileToHash.getName(), localHash, remoteFile.hash});
+                                    new Object[]{fileToHash.getName(), localHash, file.remoteFile.hash});
                             download = true;
                         }
                     } catch (final IOException ex) {
@@ -226,18 +232,16 @@ public final class UpdateTask
             }
 
             if (download) {
-                if (remoteFile == null) {
+                if (file.remoteFile == null) {
                     String errMsg = String.format("Required file \"%s%s\" cannot be found.",
-                            localFile.baseUrl, localFile.remoteName);
+                            file.baseUrl, file.platform);
                     throw new RuntimeException(errMsg);
                 }
-                filesToDownload.add(localFile);
+                filesToDownload.add(file);
             }
         }
         return filesToDownload;
     }
-
-    private FileToDownload launcherJarFile;
 
     private List<FileToDownload> listBinaries(HashMap<String, RemoteFile> remoteIndex)
             throws IOException {
@@ -267,12 +271,6 @@ public final class UpdateTask
         }
         return localFiles;
     }
-
-    private static final String VERSION_COMMENT_PATTERN = "^\\s*#",
-            VERSION_PLATFORM_PATTERN = "^(\\S+)\\s*$",
-            VERSION_HASH_AND_NAME_PATTERN = "\\s*([a-fA-F0-9]{32})\\s+(\\S+)\\s*$";
-    private static final Pattern versionPlatformRegex = Pattern.compile(VERSION_PLATFORM_PATTERN),
-            versionDetailsRegex = Pattern.compile(VERSION_HASH_AND_NAME_PATTERN);
 
     // get a list of binaries available from Charged-Miners CDN
     private HashMap<String, RemoteFile> getRemoteIndex() {
@@ -306,7 +304,6 @@ public final class UpdateTask
                 // (e.g. "  3cc74e29723e7d790f8d496df199cdcb  Charge.i386.f13a709.exe")
                 platformFound = false;
                 final RemoteFile file = new RemoteFile();
-                file.platform = platform;
                 file.hash = dataMatch.group(1);
                 file.name = dataMatch.group(2);
                 remoteFiles.put(platform.toLowerCase(), file);
@@ -327,7 +324,7 @@ public final class UpdateTask
         }
         final byte[] localHashBytes = digest.digest();
         final String hashString = new BigInteger(1, localHashBytes).toString(16);
-        return padLeft(hashString, '0', 40);
+        return padLeft(hashString, '0', 32);
     }
 
     private static String padLeft(final String s, final char c, final int n) {
@@ -348,7 +345,7 @@ public final class UpdateTask
             throw new NullPointerException("file");
         }
         final File tempFile = File.createTempFile(file.localName.getName(), ".downloaded");
-        final URL website = new URL(file.baseUrl + file.remoteName);
+        final URL website = new URL(file.baseUrl + file.remoteFile.name);
 
         try (InputStream siteStream = website.openStream()) {
             PathUtil.copyStreamToFile(siteStream, tempFile);
@@ -472,9 +469,10 @@ public final class UpdateTask
 
         // remote filename
         public final String baseUrl;
-        public final String remoteName;
+        public final String platform;
         public final File localName;
         public final File targetName;
+        public RemoteFile remoteFile;
 
         FileToDownload(final String baseUrl, final String remoteName, final File localName) {
             this(baseUrl, remoteName, localName, localName);
@@ -482,7 +480,7 @@ public final class UpdateTask
 
         FileToDownload(final String baseUrl, final String remoteName, final File localName, final File targetName) {
             this.baseUrl = baseUrl;
-            this.remoteName = remoteName;
+            this.platform = remoteName;
             this.localName = localName;
             this.targetName = targetName;
         }
@@ -490,7 +488,6 @@ public final class UpdateTask
 
     private final static class RemoteFile {
 
-        String platform;
         String name;
         String hash;
     }
@@ -514,7 +511,7 @@ public final class UpdateTask
                 }
 
             } catch (final Exception ex) {
-                String fileName = (file != null ? file.remoteName : "?");
+                String fileName = (file != null ? file.platform : "?");
                 logger.log(Level.SEVERE, "Error downloading or deploying an updated file: " + fileName, ex);
             }
         }

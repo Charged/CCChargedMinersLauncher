@@ -22,13 +22,12 @@ final public class ClientLauncher {
 
         try {
             // Find the game binary
-            File binaryFile = new File(PathUtil.getBinaryName(false));
+            File binaryFile = new File(SharedUpdaterCode.getDataDir(), PathUtil.getBinaryName(false));
             if (!binaryFile.exists()) {
-                binaryFile = new File(PathUtil.getBinaryName(true));
+                binaryFile = new File(SharedUpdaterCode.getDataDir(), PathUtil.getBinaryName(true));
             }
             if (!binaryFile.exists()) {
-                throw new FileNotFoundException("Could not find the game executable! "
-                        + "Something must've gone wrong in the update process.");
+                throw new FileNotFoundException("Could not find the game executable at " + binaryFile.getAbsolutePath());
             }
 
             // Chmod +x, if needed
@@ -38,12 +37,12 @@ final public class ClientLauncher {
 
             // Pack joinInfo's information into an mc:// URI
             String mcUrl = String.format("mc://%s:%d/%s/%s",
-                    joinInfo.address, joinInfo.port, joinInfo.playerName,
+                    joinInfo.address.getHostAddress(), joinInfo.port, joinInfo.playerName,
                     (joinInfo.pass != null ? joinInfo.pass : ""));
 
             final ProcessBuilder processBuilder = new ProcessBuilder(
-                    binaryFile.getName(), mcUrl
-                    //, "SKIN_SERVER=" + SessionManager.getSession().getSkinUrl() // TODO: when CM supports it
+                    binaryFile.getAbsolutePath(), mcUrl
+            //, "SKIN_SERVER=" + SessionManager.getSession().getSkinUrl() // TODO: when CM supports it
             );
 
             processBuilder.directory(SharedUpdaterCode.getDataDir());
