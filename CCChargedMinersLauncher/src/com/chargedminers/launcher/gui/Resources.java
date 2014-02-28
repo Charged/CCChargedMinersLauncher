@@ -37,7 +37,7 @@ public final class Resources {
             UIManager.setLookAndFeel(new NimbusLookAndFeel() {
                 @Override
                 public UIDefaults getDefaults() {
-                    // Customize the colors to match ClassiCube.net style
+                    // Customize the colors to match Charged-Miners.com style
                     final UIDefaults ret = super.getDefaults();
                     final Font font = new Font(Font.SANS_SERIF, Font.BOLD, 13);
                     ret.put("Button.font", font);

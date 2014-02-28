@@ -1,8 +1,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>dist\ClassiCubeSelfUpdater.jar</jar>
-  <outfile>dist\ClassiCube.exe</outfile>
+  <jar>dist\CCChargedMinersSelfUpdater.jar</jar>
+  <outfile>dist\ChargedMiners.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>
@@ -11,7 +11,7 @@
   <supportUrl></supportUrl>
   <stayAlive>false</stayAlive>
   <manifest>wrapper.manifest</manifest>
-  <icon>cc-icon-256.ico</icon>
+  <icon>..\art\cm-icon.ico</icon>
   <jre>
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
@@ -20,15 +20,15 @@
     <jdkPreference>preferJre</jdkPreference>
   </jre>
   <versionInfo>
-    <fileVersion>14.01.30.0</fileVersion>
-    <txtFileVersion>Build 6 (2014-01-30)</txtFileVersion>
-    <fileDescription>ClassiCube Launcher</fileDescription>
-    <copyright>ClassiCube.net</copyright>
-    <productVersion>14.01.30.0</productVersion>
-    <txtProductVersion>Build 6 (2014-01-30)</txtProductVersion>
-    <productName>ClassiCube Launcher</productName>
-    <companyName>ClassiCube.net</companyName>
-    <internalName>ClassiCube Launcher</internalName>
-    <originalFilename>ClassiCube.exe</originalFilename>
+    <fileVersion>14.02.28.0</fileVersion>
+    <txtFileVersion>Build 1 (2014-02-28)</txtFileVersion>
+    <fileDescription>Charged-Miners Launcher</fileDescription>
+    <copyright>Charged-Miners.com</copyright>
+    <productVersion>14.02.28.0</productVersion>
+    <txtProductVersion>Build 1 (2014-02-28)</txtProductVersion>
+    <productName>Charged-Miners Launcher</productName>
+    <companyName>Charged-Miners.com</companyName>
+    <internalName>Charged-Miners Launcher</internalName>
+    <originalFilename>ChargedMiners.exe</originalFilename>
   </versionInfo>
 </launch4jConfig>
