@@ -48,7 +48,7 @@ public final class Resources {
                     ret.put("nimbusBlueGrey", ccLight);
                     ret.put("control", ccLight);
                     ret.put("nimbusFocus", cmMagenta);
-                    ret.put("nimbusBorder", cmMagenta);
+                    ret.put("nimbusBorder", ccBorder);
                     ret.put("nimbusSelectionBackground", cmMagenta);
                     ret.put("Table.background", Color.WHITE);
                     ret.put("Table.background", Color.WHITE);
