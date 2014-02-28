@@ -23,7 +23,7 @@ public class ConfirmScreen extends javax.swing.JDialog {
         final ImagePanel bgPanel = new ImagePanel(null, true);
         bgPanel.setGradient(true);
         bgPanel.setImage(Resources.getClassiCubeBackground());
-        bgPanel.setGradientColor(new Color(124, 104, 141));
+        bgPanel.setGradientColor(Resources.colorGradient);
         bgPanel.setBorder(new EmptyBorder(8, 8, 8, 8));
         setContentPane(bgPanel);
 

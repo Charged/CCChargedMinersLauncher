@@ -10,7 +10,6 @@ import com.chargedminers.launcher.ServerJoinInfo;
 import com.chargedminers.launcher.SessionManager;
 import com.chargedminers.launcher.SignInResult;
 import com.chargedminers.launcher.UserAccount;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -126,7 +125,7 @@ public final class SignInScreen extends javax.swing.JFrame {
     void selectClassiCubeNet() {
         LogUtil.getLogger().log(Level.FINE, "SignInScreen.SelectClassiCube");
         bgPanel.setImage(Resources.getClassiCubeBackground());
-        bgPanel.setGradientColor(new Color(124, 104, 141));
+        bgPanel.setGradientColor(Resources.colorGradient);
         ipLogo.setImage(Resources.getClassiCubeLogo());
 
         bChangeService.setText("Switch to Minecraft.net");
@@ -138,7 +137,7 @@ public final class SignInScreen extends javax.swing.JFrame {
         LogUtil.getLogger().log(Level.FINE, "SignInScreen.SelectMinecraftNet");
         bgPanel.setImage(Resources.getMinecraftNetBackground());
         ipLogo.setImage(Resources.getMinecraftNetLogo());
-        bgPanel.setGradientColor(new Color(36, 36, 36));
+        bgPanel.setGradientColor(Resources.colorGradient);
         bChangeService.setText("Switch to ClassiCube");
         SessionManager.selectService(GameServiceType.MinecraftNetService);
         onAfterServiceChanged();
@@ -567,7 +566,7 @@ public final class SignInScreen extends javax.swing.JFrame {
         progress = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("ClassiCube Launcher");
+        setTitle("Charged-Miners Launcher");
         setBackground(new java.awt.Color(153, 128, 173));
         setName("ClassiCube Launcher"); // NOI18N
         setPreferredSize(new java.awt.Dimension(320, 270));
@@ -605,6 +604,7 @@ public final class SignInScreen extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
         getContentPane().add(ipLogo, gridBagConstraints);
 

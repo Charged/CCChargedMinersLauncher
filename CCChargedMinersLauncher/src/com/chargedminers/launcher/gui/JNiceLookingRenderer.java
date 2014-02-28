@@ -32,6 +32,7 @@ class JNiceLookingRenderer {
         }
 
         final ButtonModel model = button.getModel();
+        Color textColor = Color.WHITE;
 
         // Define colors
         final Color ccGradientTop, ccGradientBottom, ccHighlight, ccBorder;
@@ -49,17 +50,18 @@ class JNiceLookingRenderer {
                 ccHighlight = new Color(192, 168, 211);
             } else {
                 // Normal
-                ccGradientTop = new Color(170, 143, 193);
-                ccGradientBottom = new Color(148, 125, 168);
-                ccHighlight = new Color(182, 158, 201);
+                ccGradientTop = new Color(143, 143, 143);
+                ccGradientBottom = new Color(125, 125, 125);
+                ccHighlight = new Color(192, 192, 192);
             }
-            ccBorder = new Color(97, 81, 110);
+            ccBorder = new Color(82, 82, 82); 
         } else {
             // Disabled
-            ccGradientTop = new Color(182, 169, 194);
-            ccGradientBottom = new Color(158, 146, 168);
-            ccHighlight = new Color(191, 179, 201);
-            ccBorder = new Color(128, 128, 128);
+            ccGradientTop = new Color(118, 118, 118);
+            ccGradientBottom = new Color(100, 100, 100);
+            ccHighlight = new Color(126, 126, 126);
+            ccBorder = new Color(96, 96, 96);
+            textColor = new Color(192,192,192);
         }
 
         // Paint background
@@ -101,7 +103,7 @@ class JNiceLookingRenderer {
             // Paint a downwards arrow
             paintTriangle(g, button.getWidth() / 2 - 3 + textOffset,
                     button.getHeight() / 2 - 1 + textOffset,
-                    4, Color.WHITE, ccBorder, button.isEnabled());
+                    4, textColor, ccBorder, button.isEnabled());
 
         } else {
             // Measure the label
@@ -124,7 +126,7 @@ class JNiceLookingRenderer {
             }
 
             // Paint text proper
-            g2.setPaint(Color.WHITE);
+            g2.setPaint(textColor);
             g2.drawString(button.getText(), x + textOffset, y + textOffset);
         }
         // Clean up

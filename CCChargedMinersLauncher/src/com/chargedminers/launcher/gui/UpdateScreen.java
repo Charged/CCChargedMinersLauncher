@@ -22,7 +22,7 @@ public final class UpdateScreen extends JFrame {
     //                                                                            FIELDS & CONSTANTS
     // =============================================================================================
 
-    private static final String RELEASE_NOTES_URL = "http://www.classicube.net/forum/viewpost/ir/latest/#bottom_post";
+    private static final String RELEASE_NOTES_URL = "http://charged-miners.com/changelog.html";
     private Desktop desktop;
     private final ServerJoinInfo joinInfo;
 

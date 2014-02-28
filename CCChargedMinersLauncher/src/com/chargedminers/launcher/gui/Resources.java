@@ -1,15 +1,28 @@
 package com.chargedminers.launcher.gui;
 
 import com.chargedminers.launcher.LogUtil;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 // Static class that keeps track of loading (lazily) our resource files.
 // Currently just handles the 4 texture images for SignInScreen.
-final class Resources {
+public final class Resources {
+
+    public static final Color colorGradient = new Color(20, 20, 20),
+            colorPurple = new Color(184, 2, 195),
+            cmMagenta = new Color(184, 2, 195),
+            cmYellow = new Color(255, 204, 0),
+            ccLight = new Color(153, 128, 173),
+            ccBorder = new Color(97, 81, 110);
 
     private static Image classiCubeBackground = null,
             minecraftNetBackground = null,
@@ -18,6 +31,35 @@ final class Resources {
             errorIcon = null,
             warningIcon = null,
             infoIcon = null;
+
+    public static void setLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(new NimbusLookAndFeel() {
+                @Override
+                public UIDefaults getDefaults() {
+                    // Customize the colors to match ClassiCube.net style
+                    final UIDefaults ret = super.getDefaults();
+                    final Font font = new Font(Font.SANS_SERIF, Font.BOLD, 13);
+                    ret.put("Button.font", font);
+                    ret.put("ToggleButton.font", font);
+                    ret.put("Button.textForeground", Color.WHITE);
+                    ret.put("ToggleButton.textForeground", Color.WHITE);
+                    ret.put("nimbusBase", ccLight);
+                    ret.put("nimbusBlueGrey", ccLight);
+                    ret.put("control", ccLight);
+                    ret.put("nimbusFocus", cmMagenta);
+                    ret.put("nimbusBorder", cmMagenta);
+                    ret.put("nimbusSelectionBackground", cmMagenta);
+                    ret.put("Table.background", Color.WHITE);
+                    ret.put("Table.background", Color.WHITE);
+                    ret.put("nimbusOrange", cmMagenta);
+                    return ret;
+                }
+            });
+        } catch (final UnsupportedLookAndFeelException ex) {
+            LogUtil.getLogger().log(Level.WARNING, "Error configuring GUI style.", ex);
+        }
+    }
 
     public static Image getClassiCubeBackground() {
         if (classiCubeBackground == null) {
