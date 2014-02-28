@@ -30,7 +30,7 @@ public class ProgressIndicator extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("<html><center>Thanks for checking out ClassiCube client!<br>\nYou will be able to sign in and play as soon<br>\nas this one-time download finishes.");
+        jLabel1.setText("<html><center>Thanks for checking out Charged-Miners!<br>\nYou will be able to sign in and play as soon<br>\nas required program files are downloaded.");
         jLabel1.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

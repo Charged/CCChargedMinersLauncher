@@ -20,7 +20,7 @@ import com.chargedminers.shared.SharedUpdaterCode;
 public class Program {
 
     private static final Logger logger = Logger.getLogger(Program.class.getName());
-    private static final String LAUNCHER_ENTRY_CLASS = "net.classicube.launcher.EntryPoint",
+    private static final String LAUNCHER_ENTRY_CLASS = "com.chargedminers.launcher.EntryPoint",
             LAUNCHER_JAR_NAME = "launcher.jar",
             LAUNCHER_DOWNLOAD_URL = "http://cm-cdn.fcraft.net/launcher/launcher.jar",
             LAUNCHER_ENTRY_METHOD = "main",
@@ -55,12 +55,12 @@ public class Program {
             } catch (final Exception ex) {
                 logger.log(Level.SEVERE, "Failed to start launcher", ex);
                 final String message = String.format(
-                        "<html>Could not start the ClassiCube launcher:"
+                        "<html>Could not start the Charged-Miners launcher:"
                         + "<blockquote><i>%s</i></blockquote>"
                         + "If clicking [Retry] does not help, please report this problem at %s",
                         new Object[]{exceptionToString(ex), BUG_REPORT_URL});
                 Object[] options = {"Abort", "Retry"};
-                int chosenOption = JOptionPane.showOptionDialog(null, message, "ClassiCube Launcher Error",
+                int chosenOption = JOptionPane.showOptionDialog(null, message, "Charged-Miners Launcher Error",
                         JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null,
                         options, options[1]);
                 if (chosenOption != 1) {
@@ -177,7 +177,7 @@ public class Program {
                     new Object[]{message, BUG_REPORT_URL});
         }
         JOptionPane.showMessageDialog(null,
-                htmlMessage, "ClassiCube Launcher Error", JOptionPane.ERROR_MESSAGE);
+                htmlMessage, "Charged-Miners Launcher Error", JOptionPane.ERROR_MESSAGE);
         System.exit(1);
     }
 

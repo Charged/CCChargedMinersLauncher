@@ -25,7 +25,7 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;Thanks for checking out ClassiCube client!&lt;br&gt;&#xa;You will be able to sign in and play as soon&lt;br&gt;&#xa;as this one-time download finishes."/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;Thanks for checking out Charged-Miners!&lt;br&gt;&#xa;You will be able to sign in and play as soon&lt;br&gt;&#xa;as required program files are downloaded."/>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
       <Constraints>
