@@ -73,6 +73,7 @@ public final class SignInScreen extends javax.swing.JFrame {
         hookUpListeners();
         getRootPane().setDefaultButton(bSignIn);
         this.ipLogo.setBorder(new EmptyBorder(8, 8, 8, 8));
+        this.setIconImages(Resources.getWindowIcons());
 
         // center the form on screen (initially)
         setLocationRelativeTo(null);

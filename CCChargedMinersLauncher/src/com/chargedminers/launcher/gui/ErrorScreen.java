@@ -80,7 +80,8 @@ public class ErrorScreen extends javax.swing.JDialog {
             lContactSupport.setVisible(false);
         }
 
-        // pack and center the frame
+        // Set windows icon and location
+        this.setIconImages(Resources.getWindowIcons());
         pack();
         setLocationRelativeTo(null);
     }

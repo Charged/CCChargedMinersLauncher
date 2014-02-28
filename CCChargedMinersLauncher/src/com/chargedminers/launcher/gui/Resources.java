@@ -6,8 +6,11 @@ import java.awt.Font;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -31,6 +34,7 @@ public final class Resources {
             errorIcon = null,
             warningIcon = null,
             infoIcon = null;
+    private static ArrayList<Image> windowIcons = null;
 
     public static void setLookAndFeel() {
         try {
@@ -108,6 +112,15 @@ public final class Resources {
             infoIcon = loadImage("/images/infoIcon.png");
         }
         return infoIcon;
+    }
+
+    public static List<Image> getWindowIcons() {
+        if (windowIcons == null) {
+            windowIcons = new ArrayList<>(2);
+            windowIcons.add(loadImage("/images/windowIcon16x16.png"));
+            windowIcons.add(loadImage("/images/windowIcon32x32.png"));
+        }
+        return windowIcons;
     }
 
     // Loads an image from inside the ClassiCubeLauncher JAR

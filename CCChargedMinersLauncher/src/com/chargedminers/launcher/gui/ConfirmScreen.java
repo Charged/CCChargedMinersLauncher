@@ -41,7 +41,8 @@ public class ConfirmScreen extends javax.swing.JDialog {
         this.imgErrorIcon.setPreferredSize(new Dimension(64, 64));
         this.imgErrorIcon.setSize(new Dimension(64, 64));
 
-        // Set windows size, pack, and center
+        // Set windows icon, size, and location
+        this.setIconImages(Resources.getWindowIcons());
         this.setPreferredSize(new Dimension(400, 130));
         pack();
         setLocationRelativeTo(null);

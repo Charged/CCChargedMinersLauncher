@@ -42,7 +42,8 @@ final class PreferencesScreen extends javax.swing.JDialog {
         nWidth.getEditor().setOpaque(false);
         nHeight.getEditor().setOpaque(false);
 
-        // Pack and center
+        // Set icon, pack and center
+        this.setIconImages(Resources.getWindowIcons());
         pack();
         setLocationRelativeTo(parent);
 

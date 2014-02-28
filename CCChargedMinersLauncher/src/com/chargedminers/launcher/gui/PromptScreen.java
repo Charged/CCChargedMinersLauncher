@@ -34,6 +34,7 @@ public class PromptScreen extends javax.swing.JDialog {
         this.tInput.setText(placeholder);
         this.tInput.selectAll();
         this.tInput.setEditable(allowModification);
+        this.tInput.getDocument().addDocumentListener(new TextChangeListener());
 
         // print the message
         if (message.startsWith("<html>")) {
@@ -54,12 +55,10 @@ public class PromptScreen extends javax.swing.JDialog {
         // Add cut/copy/paste menu to text box
         CutCopyPasteAdapter.addToComponent(tInput, true, allowModification);
 
-        // Set windows size, pack, and center
-        //this.setPreferredSize(new Dimension(400, 150));
+        // Set windows icon and location
+        this.setIconImages(Resources.getWindowIcons());
         pack();
         setLocationRelativeTo(null);
-
-        tInput.getDocument().addDocumentListener(new TextChangeListener());
     }
 
     class TextChangeListener implements DocumentListener {
