@@ -6,7 +6,6 @@ import javax.swing.border.EmptyBorder;
 
 public class ConfirmScreen extends javax.swing.JDialog {
 
-
     public static boolean show(final String title, final String message) {
         ConfirmScreen screen = new ConfirmScreen(title, message);
         screen.setVisible(true);
@@ -16,8 +15,8 @@ public class ConfirmScreen extends javax.swing.JDialog {
 
     private ConfirmScreen(final String title, final String message) {
         // set title, add border
-        super((Frame)null, title, true);
-        
+        super((Frame) null, title, true);
+
         // set background
         final ImagePanel bgPanel = new ImagePanel(null, true);
         bgPanel.setGradient(true);

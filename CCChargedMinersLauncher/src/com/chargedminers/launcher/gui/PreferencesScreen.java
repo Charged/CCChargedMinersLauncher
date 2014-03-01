@@ -148,8 +148,8 @@ final class PreferencesScreen extends javax.swing.JDialog {
 
         ChargedMinersSettings.fullscreen = xFullscreen.isSelected();
         ChargedMinersSettings.autoSize = xAutoSize.isSelected();
-        ChargedMinersSettings.width = (int)nWidth.getValue();
-        ChargedMinersSettings.height = (int)nHeight.getValue();
+        ChargedMinersSettings.width = (int) nWidth.getValue();
+        ChargedMinersSettings.height = (int) nHeight.getValue();
         try {
             ChargedMinersSettings.save();
         } catch (IOException ex) {

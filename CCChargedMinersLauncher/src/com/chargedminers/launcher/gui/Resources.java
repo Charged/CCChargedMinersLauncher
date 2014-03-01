@@ -54,7 +54,6 @@ public final class Resources {
                     defaults.put("nimbusBorder", ccBorder);
                     defaults.put("nimbusSelectionBackground", cmMagenta);
                     defaults.put("Table.background", Color.WHITE);
-                    defaults.put("Table.background", Color.WHITE);
                     defaults.put("nimbusOrange", cmMagenta);
                     return defaults;
                 }

@@ -66,7 +66,7 @@ public class SameIPScreen extends JDialog {
         this.imgErrorIcon.setPreferredSize(new Dimension(64, 64));
         this.imgErrorIcon.setSize(new Dimension(64, 64));
 
-        // Set windows icon, size, and location
+        // Set window icon, size, and location
         this.setIconImages(Resources.getWindowIcons());
         this.setPreferredSize(new Dimension(450, 200));
         pack();
