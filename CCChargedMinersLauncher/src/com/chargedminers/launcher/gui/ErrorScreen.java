@@ -19,8 +19,8 @@ import javax.swing.border.EmptyBorder;
 public class ErrorScreen extends javax.swing.JDialog {
 
     private static final String
-            SUPPORT_FULL_URL = "https://github.com/fragmer/ClassiCubeLauncher/issues?labels=&page=1&state=open",
-            SUPPORT_SHORTCUT_URL = "http://is.gd/CCL_bugs";
+            SUPPORT_FULL_URL = "https://github.com/Charged/CCChargedMinersLauncher/issues?labels=&page=1&state=open",
+            SUPPORT_SHORTCUT_URL = "http://is.gd/CMBugs";
 
     public static void show(final String title, final String message, final Throwable ex) {
         new ErrorScreen(title, message, ex).setVisible(true);
