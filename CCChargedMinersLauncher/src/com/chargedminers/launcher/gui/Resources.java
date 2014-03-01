@@ -10,20 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
-// Static class that keeps track of loading (lazily) our resource files.
-// Currently just handles the 4 texture images for SignInScreen.
+// Static class that keeps track of GUI look-and-feel,
+// branding colors, and loading (lazily) images and icons.
 public final class Resources {
 
     public static final Color colorGradient = new Color(20, 20, 20),
             colorPurple = new Color(184, 2, 195),
             cmMagenta = new Color(184, 2, 195),
-            cmYellow = new Color(255, 204, 0),
+            //cmYellow = new Color(255, 204, 0),
             ccLight = new Color(153, 128, 173),
             ccBorder = new Color(97, 81, 110);
 
@@ -42,22 +41,22 @@ public final class Resources {
                 @Override
                 public UIDefaults getDefaults() {
                     // Customize the colors to match Charged-Miners.com style
-                    final UIDefaults ret = super.getDefaults();
+                    final UIDefaults defaults = super.getDefaults();
                     final Font font = new Font(Font.SANS_SERIF, Font.BOLD, 13);
-                    ret.put("Button.font", font);
-                    ret.put("ToggleButton.font", font);
-                    ret.put("Button.textForeground", Color.WHITE);
-                    ret.put("ToggleButton.textForeground", Color.WHITE);
-                    ret.put("nimbusBase", ccLight);
-                    ret.put("nimbusBlueGrey", ccLight);
-                    ret.put("control", ccLight);
-                    ret.put("nimbusFocus", cmMagenta);
-                    ret.put("nimbusBorder", ccBorder);
-                    ret.put("nimbusSelectionBackground", cmMagenta);
-                    ret.put("Table.background", Color.WHITE);
-                    ret.put("Table.background", Color.WHITE);
-                    ret.put("nimbusOrange", cmMagenta);
-                    return ret;
+                    defaults.put("Button.font", font);
+                    defaults.put("ToggleButton.font", font);
+                    defaults.put("Button.textForeground", Color.WHITE);
+                    defaults.put("ToggleButton.textForeground", Color.WHITE);
+                    defaults.put("nimbusBase", ccLight);
+                    defaults.put("nimbusBlueGrey", ccLight);
+                    defaults.put("control", ccLight);
+                    defaults.put("nimbusFocus", cmMagenta);
+                    defaults.put("nimbusBorder", ccBorder);
+                    defaults.put("nimbusSelectionBackground", cmMagenta);
+                    defaults.put("Table.background", Color.WHITE);
+                    defaults.put("Table.background", Color.WHITE);
+                    defaults.put("nimbusOrange", cmMagenta);
+                    return defaults;
                 }
             });
         } catch (final UnsupportedLookAndFeelException ex) {

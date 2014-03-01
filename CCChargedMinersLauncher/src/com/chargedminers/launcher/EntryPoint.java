@@ -2,10 +2,10 @@ package com.chargedminers.launcher;
 
 import com.chargedminers.launcher.gui.DebugWindow;
 import com.chargedminers.launcher.gui.ErrorScreen;
+import com.chargedminers.launcher.gui.Resources;
 import com.chargedminers.launcher.gui.SignInScreen;
 import com.chargedminers.shared.SharedUpdaterCode;
 import java.io.IOException;
-import com.chargedminers.launcher.gui.Resources;
 
 // Contains initialization code for the whole launcher
 public final class EntryPoint {

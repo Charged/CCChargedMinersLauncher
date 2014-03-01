@@ -2,7 +2,6 @@ package com.chargedminers.launcher.gui;
 
 import com.chargedminers.launcher.LogUtil;
 import com.chargedminers.launcher.Prefs;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.net.InetAddress;

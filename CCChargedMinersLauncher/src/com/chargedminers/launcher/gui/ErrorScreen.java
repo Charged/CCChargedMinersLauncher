@@ -1,6 +1,5 @@
 package com.chargedminers.launcher.gui;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
