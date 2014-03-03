@@ -82,7 +82,7 @@
     <Component class="javax.swing.JCheckBox" name="xAutoSize">
       <Properties>
         <Property name="text" type="java.lang.String" value="Match desktop resolution"/>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Choose whether fullscreen resolution should match your desktop resolution.&lt;br&gt;&#xa;If this setting is off, you will be able to choose the desired resolution above. Default is ON." noResource="true"/>
       </Properties>
       <Events>
         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="xAutoSizeStateChanged"/>
@@ -96,7 +96,7 @@
     <Component class="javax.swing.JCheckBox" name="xFullscreen">
       <Properties>
         <Property name="text" type="java.lang.String" value="Start in fullscreen"/>
-        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Choose whether ClassiCube games should start in fullscreen mode.&lt;br&gt;&#xa;You can also toggle fullscreen mode in-game by pressing &lt;b&gt;F11&lt;/b&gt;.&lt;br&gt;&#xa;Default is OFF."/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Choose whether Charged-Miners client should start in fullscreen mode.&lt;br&gt;&#xa;You can also toggle fullscreen mode in-game. Default is OFF."/>
       </Properties>
       <Events>
         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="xFullscreenStateChanged"/>
@@ -117,6 +117,7 @@
     <Component class="javax.swing.JLabel" name="lUpdateMode">
       <Properties>
         <Property name="text" type="java.lang.String" value="Install game updates..."/>
+        <Property name="toolTipText" type="java.lang.String" value="Choose how Charged-Miners game and launcher updates are installed."/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
@@ -198,6 +199,7 @@
     <Component class="com.chargedminers.launcher.gui.JNiceLookingButton" name="bForgetUsers">
       <Properties>
         <Property name="text" type="java.lang.String" value="Forget all users"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Erase all stored usernames. This also erases stored passwords and server information. Cannot be undone." noResource="true"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bForgetUsersActionPerformed"/>
@@ -225,6 +227,7 @@
     <Component class="com.chargedminers.launcher.gui.JNiceLookingButton" name="bForgetPasswords">
       <Properties>
         <Property name="text" type="java.lang.String" value="Forget all passwords"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Erase all stored passwords. This also erases stored server information. Cannot be undone." noResource="true"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bForgetPasswordsActionPerformed"/>
@@ -249,6 +252,7 @@
     <Component class="com.chargedminers.launcher.gui.JNiceLookingButton" name="bForgetServers">
       <Properties>
         <Property name="text" type="java.lang.String" value="Forget servers"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Erase all stored server information (including &lt;b&gt;[Resume]&lt;/b&gt; information and any IP address overrides). Cannot be undone." noResource="true"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bForgetServersActionPerformed"/>
@@ -331,7 +335,7 @@
     <Component class="javax.swing.JCheckBox" name="xDebugMode">
       <Properties>
         <Property name="text" type="java.lang.String" value="Debug mode"/>
-        <Property name="toolTipText" type="java.lang.String" value="Enables debug console (requires launcher restart)."/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;hrml&gt;Enables debug console (requires launcher restart).&lt;br&gt;&#xa;This will allow you to see the debug information printed by launcher and game client.&lt;br&gt;&#xa;Might be useful for debugging if you run into bugs/problems. Default is OFF."/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -355,7 +359,8 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="xKeepOpen">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Keep launcher open after launching the game"/>
+        <Property name="text" type="java.lang.String" value="Keep launcher open after launching the game" noResource="true"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Choose whether to keep the launcher signed-in and open after launching Charged-Miners window.&lt;br&gt;&#xa;This would make it easy to join another server later (or even connect to several servers at once)." noResource="true"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">

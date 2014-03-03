@@ -334,7 +334,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         getContentPane().add(nHeight, gridBagConstraints);
 
         xAutoSize.setText("Match desktop resolution");
-        xAutoSize.setToolTipText("");
+        xAutoSize.setToolTipText("<html>Choose whether fullscreen resolution should match your desktop resolution.<br>\nIf this setting is off, you will be able to choose the desired resolution above. Default is ON."); // NOI18N
         xAutoSize.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 xAutoSizeStateChanged(evt);
@@ -348,7 +348,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         getContentPane().add(xAutoSize, gridBagConstraints);
 
         xFullscreen.setText("Start in fullscreen");
-        xFullscreen.setToolTipText("<html>Choose whether ClassiCube games should start in fullscreen mode.<br>\nYou can also toggle fullscreen mode in-game by pressing <b>F11</b>.<br>\nDefault is OFF.");
+        xFullscreen.setToolTipText("<html>Choose whether Charged-Miners client should start in fullscreen mode.<br>\nYou can also toggle fullscreen mode in-game. Default is OFF.");
         xFullscreen.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 xFullscreenStateChanged(evt);
@@ -370,6 +370,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         getContentPane().add(jSeparator1, gridBagConstraints);
 
         lUpdateMode.setText("Install game updates...");
+        lUpdateMode.setToolTipText("Choose how Charged-Miners game and launcher updates are installed.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -433,6 +434,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         getContentPane().add(xRememberUsers, gridBagConstraints);
 
         bForgetUsers.setText("Forget all users");
+        bForgetUsers.setToolTipText("<html>Erase all stored usernames. This also erases stored passwords and server information. Cannot be undone."); // NOI18N
         bForgetUsers.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bForgetUsersActionPerformed(evt);
@@ -460,6 +462,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         getContentPane().add(xRememberPasswords, gridBagConstraints);
 
         bForgetPasswords.setText("Forget all passwords");
+        bForgetPasswords.setToolTipText("<html>Erase all stored passwords. This also erases stored server information. Cannot be undone."); // NOI18N
         bForgetPasswords.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bForgetPasswordsActionPerformed(evt);
@@ -483,6 +486,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         getContentPane().add(xRememberServer, gridBagConstraints);
 
         bForgetServers.setText("Forget servers");
+        bForgetServers.setToolTipText("<html>Erase all stored server information (including <b>[Resume]</b> information and any IP address overrides). Cannot be undone.");
         bForgetServers.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bForgetServersActionPerformed(evt);
@@ -550,7 +554,7 @@ final class PreferencesScreen extends javax.swing.JDialog {
         getContentPane().add(bCancel, gridBagConstraints);
 
         xDebugMode.setText("Debug mode");
-        xDebugMode.setToolTipText("Enables debug console (requires launcher restart).");
+        xDebugMode.setToolTipText("<hrml>Enables debug console (requires launcher restart).<br>\nThis will allow you to see the debug information printed by launcher and game client.<br>\nMight be useful for debugging if you run into bugs/problems. Default is OFF.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 13;
@@ -573,7 +577,8 @@ final class PreferencesScreen extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         getContentPane().add(bSubmitDiagInfo, gridBagConstraints);
 
-        xKeepOpen.setText("Keep launcher open after launching the game");
+        xKeepOpen.setText("Keep launcher open after launching the game"); // NOI18N
+        xKeepOpen.setToolTipText("<html>Choose whether to keep the launcher signed-in and open after launching Charged-Miners window.<br>\nThis would make it easy to join another server later (or even connect to several servers at once)."); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
