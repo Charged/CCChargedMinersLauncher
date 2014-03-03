@@ -14,7 +14,7 @@ public final class LogUtil {
 
     private static final Logger logger = Logger.getLogger(LogUtil.class.getName());
 
-    // Sets up logging to file (%AppData%/net.classicube.launcher/launcher.log)
+    // Sets up logging to file (%AppData%/charge/launcher.log)
     public static void init() throws IOException {
         logger.setLevel(Level.ALL);
 

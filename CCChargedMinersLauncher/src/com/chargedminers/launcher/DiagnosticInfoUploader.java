@@ -50,7 +50,7 @@ public class DiagnosticInfoUploader {
         // construct a Gist API request (JSON)
         JsonStringWriter writer = JsonWriter.string()
                 .object()
-                .value("description", "ClassiCube debug information")
+                .value("description", "Charged-Miners debug information")
                 .value("public", false)
                 .object("files");
 

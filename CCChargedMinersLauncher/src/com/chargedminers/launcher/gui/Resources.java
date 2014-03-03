@@ -121,7 +121,7 @@ public final class Resources {
         return windowIcons;
     }
 
-    // Loads an image from inside the ClassiCubeLauncher JAR
+    // Loads an image from inside launcher.jar
     private static Image loadImage(final String fileName) {
         if (fileName == null) {
             throw new NullPointerException("fileName");

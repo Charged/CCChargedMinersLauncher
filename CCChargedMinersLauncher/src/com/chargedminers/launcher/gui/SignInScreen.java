@@ -569,7 +569,7 @@ public final class SignInScreen extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Charged-Miners Launcher");
         setBackground(new java.awt.Color(153, 128, 173));
-        setName("ClassiCube Launcher"); // NOI18N
+        setName("Charged-Miners Launcher"); // NOI18N
         setPreferredSize(new java.awt.Dimension(320, 270));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 

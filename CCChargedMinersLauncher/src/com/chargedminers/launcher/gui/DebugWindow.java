@@ -34,7 +34,7 @@ public class DebugWindow extends javax.swing.JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                instance.setTitle("ClassiCube Log - " + newTitle);
+                instance.setTitle("Charged-Miners Log - " + newTitle);
             }
         });
     }

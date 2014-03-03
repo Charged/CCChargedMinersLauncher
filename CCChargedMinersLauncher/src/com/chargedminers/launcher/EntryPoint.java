@@ -9,7 +9,7 @@ import java.io.IOException;
 
 // Contains initialization code for the whole launcher
 public final class EntryPoint {
-    // This is also called by ClassiCubeSelfUpdater
+    // This is also called by CCChargedMinersSelfUpdater
 
     public static void main(final String[] args) {
         System.setProperty("java.net.preferIPv4Stack", "true");
@@ -20,8 +20,8 @@ public final class EntryPoint {
             LogUtil.init();
 
         } catch (final IOException ex) {
-            ErrorScreen.show("Error starting ClassiCube",
-                    "Could not create data directory for launcher.", ex);
+            ErrorScreen.show("Error starting Charged-Miners",
+                    "Could not create data directory.", ex);
             System.exit(0);
         }
 
