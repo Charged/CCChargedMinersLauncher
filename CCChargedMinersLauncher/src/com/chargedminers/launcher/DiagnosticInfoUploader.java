@@ -55,41 +55,41 @@ public class DiagnosticInfoUploader {
                 .object("files");
 
         // append system information
-        if (sysData != null) {
+        if (sysData != null && !sysData.isEmpty()) {
             writer = writer.object("_system")
                     .value("content", sysData)
                     .end();
         }
 
         // append directory information
-        if (dirData != null) {
+        if (dirData != null && !dirData.isEmpty()) {
             writer = writer.object("_dir")
                     .value("content", dirData)
                     .end();
         }
 
         // append log files
-        if (clientLogData != null) {
+        if (clientLogData != null && !clientLogData.isEmpty()) {
             writer = writer.object(PathUtil.CLIENT_LOG_FILE_NAME)
                     .value("content", clientLogData)
                     .end();
         }
-        if (launcherLogData != null) {
+        if (launcherLogData != null && !launcherLogData.isEmpty()) {
             writer = writer.object(PathUtil.LOG_FILE_NAME)
                     .value("content", launcherLogData)
                     .end();
         }
-        if (launcherOldLogData != null) {
+        if (launcherOldLogData != null && !launcherOldLogData.isEmpty()) {
             writer = writer.object(PathUtil.LOG_OLD_FILE_NAME)
                     .value("content", launcherOldLogData)
                     .end();
         }
-        if (selfUpdaterLogData != null) {
+        if (selfUpdaterLogData != null && !selfUpdaterLogData.isEmpty()) {
             writer = writer.object(PathUtil.SELF_UPDATER_LOG_FILE_NAME)
                     .value("content", selfUpdaterLogData)
                     .end();
         }
-        if (optionsData != null) {
+        if (optionsData != null && !optionsData.isEmpty()) {
             writer = writer.object(PathUtil.OPTIONS_FILE_NAME)
                     .value("content", optionsData)
                     .end();
@@ -105,10 +105,11 @@ public class DiagnosticInfoUploader {
         try {
             return JsonParser.object().from(gistResponse).getString("html_url");
         } catch (final JsonParserException ex) {
+            LogUtil.getLogger().log(Level.SEVERE, "Error parsing Gist response", ex);
+            LogUtil.getLogger().log(Level.SEVERE, gistResponse);
             ErrorScreen.show("Error uploading debug information",
                     "Debug information was gathered, but could not be uploaded.",
                     ex);
-            LogUtil.getLogger().log(Level.SEVERE, "Error parsing Gist response", ex);
             return null;
         }
     }
